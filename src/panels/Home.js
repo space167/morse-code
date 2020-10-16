@@ -164,6 +164,11 @@ const Home = ({id}) => {
         return;
       }
 
+      if (!statusPlay) {
+        setSymbole(null);
+        return;
+      }
+
       const onHandleEndedPoint = () => {
         pointAudio.removeEventListener("ended", onHandleEndedPoint);
         bridge.send("VKWebAppFlashSetLevel", {"level": 0});
@@ -184,6 +189,7 @@ const Home = ({id}) => {
         lineAudio.volume = 0
       }
       if (arrayCode[i] === '-') {
+
         pointAudio.addEventListener("ended", onHandleEndedPoint);
         if (flash) {
           bridge.send("VKWebAppFlashSetLevel", {"level": 0.5});
