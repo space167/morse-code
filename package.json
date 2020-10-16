@@ -1,11 +1,12 @@
 {
   "name": "morse-code",
   "version": "1.0.0",
-  "homepage": "./",
+  "homepage": "https://artem.readman.pro/",
   "description": "",
   "main": "index.js",
   "scripts": {
     "start": "cross-env PORT=10888 HTTPS=true react-scripts start",
+    "tunnel": "vk-tunnel --insecure=1 --http-protocol=https --ws-protocol=wss --host=localhost --port=10888",
     "build": "react-scripts build",
     "predeploy": "npm run build",
     "deploy": "vk-miniapps-deploy",

@@ -3,6 +3,7 @@
   grid-template-columns: repeat(auto-fit, minmax(85px, 1fr));
   grid-gap: 2px;
 }
+
 .item {
   width: 100%;
 }
@@ -17,17 +18,22 @@
 
 .inline div,
 .inline div svg {
-  display: inline!important;
+  display: inline !important;
 }
 
 .margin-small {
-  margin-left: 3px!important;
-  margin-right: 3px!important;
+  margin-left: 3px !important;
+  margin-right: 3px !important;
 }
 
 .settings-container {
   position: fixed;
   background: #ffffff;
+  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.2);
   z-index: 5;
-  box-shadow: 5px 5px 5px rgba(0,0,0,0.2);
+}
+
+body[scheme=space_gray] .settings-container {
+  background: #000000;
+  box-shadow: 5px 5px 5px rgba(255, 255, 255, 0.2);
 }

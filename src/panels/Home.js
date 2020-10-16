@@ -21,11 +21,11 @@ import Icon24Volume from '@vkontakte/icons/dist/24/volume';
 
 import point from '../assets/audio/-.mp3'
 import line from '../assets/audio/—.mp3'
-
-import styles from './Home.module.css'
 import Div from "@vkontakte/vkui/dist/components/Div/Div";
 import PanelHeaderButton from "@vkontakte/vkui/dist/components/PanelHeaderButton/PanelHeaderButton";
 import Checkbox from "@vkontakte/vkui/dist/components/Checkbox/Checkbox";
+
+import styles from './Home.module.css'
 
 const DEFAULT_PLAYBACK_SPEED = 2;
 
@@ -210,7 +210,7 @@ const Home = ({id}) => {
       <PanelHeader
         left={<PanelHeaderButton onClick={() => setSettings(!settings)}><Icon24Settings/></PanelHeaderButton>}
       >
-        Morse Code
+        Морзянка
       </PanelHeader>
       {settings &&
       <Div className={styles['settings-container']}>
