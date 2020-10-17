@@ -64,7 +64,7 @@ const language = 'ru';
 let statusPlay = false;
 let symbolePlay = '';
 
-const Home = ({id}) => {
+const Home = ({id, volume, flash, setActiveModal}) => {
   const pointAudio = new Audio(point);
   const lineAudio = new Audio(line);
   const [playbackSpeed, setPlaybackSpeed] = useState(DEFAULT_PLAYBACK_SPEED);
@@ -74,10 +74,6 @@ const Home = ({id}) => {
   const [textInput, setTextInput] = useState('');
   const [playStatus, setPlayStatus] = useState(false);
   const [playStatusChar, setPlayStatusChar] = useState(false);
-
-  const [settings, setSettings] = useState(false);
-  const [volume, setVolume] = useState(true);
-  const [flash, setFlash] = useState(true);
 
   useEffect(() => {
     statusPlay = playStatusChar;
@@ -214,24 +210,10 @@ const Home = ({id}) => {
   return (
     <Panel id={id}>
       <PanelHeader
-        left={<PanelHeaderButton onClick={() => setSettings(!settings)}><Icon24Settings/></PanelHeaderButton>}
+        left={<PanelHeaderButton onClick={() => setActiveModal('settings')}><Icon24Settings/></PanelHeaderButton>}
       >
         Морзянка
       </PanelHeader>
-      {settings &&
-      <Div className={styles['settings-container']}>
-        <Group title="Settings">
-          <Cell>
-            <Checkbox checked={flash} onChange={() => {
-              setFlash(!flash)
-            }}><Icon24Flash/></Checkbox>
-            <Checkbox checked={volume} onChange={() => {
-              setVolume(!volume)
-            }}><Icon24Volume/></Checkbox>
-          </Cell>
-        </Group>
-      </Div>
-      }
       <FormLayout>
         <Group title="Input text">
           <Cell>
