@@ -3,7 +3,7 @@ import bridge from '@vkontakte/vk-bridge';
 import View from '@vkontakte/vkui/dist/components/View/View';
 import ScreenSpinner from '@vkontakte/vkui/dist/components/ScreenSpinner/ScreenSpinner';
 import '@vkontakte/vkui/dist/vkui.css';
-import Home from './panels/Home';
+import Home from './panels/Home/Home';
 import ModalRoot from "@vkontakte/vkui/dist/components/ModalRoot/ModalRoot";
 import ModalPage from "@vkontakte/vkui/dist/components/ModalPage/ModalPage";
 import ModalPageHeader from "@vkontakte/vkui/dist/components/ModalPageHeader/ModalPageHeader";
@@ -13,12 +13,20 @@ import Icon24Flash from "@vkontakte/icons/dist/24/flash";
 import Icon24Volume from "@vkontakte/icons/dist/24/volume";
 import Cell from "@vkontakte/vkui/dist/components/Cell/Cell";
 import Switch from "@vkontakte/vkui/dist/components/Switch/Switch";
+import Friends from "./panels/Friends/Friends";
+
+const ROUTES = {
+  HOME: 'home',
+  FRIENDS: 'friends'
+};
 
 const App = () => {
   const [popout, setPopout] = useState(<ScreenSpinner size='large'/>);
+  const [activePanel, setActivePanel] = useState(ROUTES.HOME)
   const [activeModal, setActiveModal] = useState(null);
   const [volume, setVolume] = useState(true);
   const [flash, setFlash] = useState(true);
+  const [textInput, setTextInput] = useState('');
 
   useEffect(() => {
     bridge.subscribe(({detail: {type, data}}) => {
@@ -34,6 +42,10 @@ const App = () => {
 
   const modalBack = () => {
     setActiveModal(null);
+  };
+
+  const go = (panel) => {
+    setActivePanel(panel);
   };
 
   const modal = (
@@ -60,10 +72,24 @@ const App = () => {
       </ModalPage>
     </ModalRoot>
   );
-
   return (
-    <View activePanel={'home'} popout={popout} modal={modal}>
-      <Home id='home' setActiveModal={setActiveModal} volume={volume} flash={flash}/>
+    <View activePanel={activePanel} popout={popout} modal={modal}>
+      <Home
+        id='home'
+        textInput={textInput}
+        setTextInput={setTextInput}
+        setActiveModal={setActiveModal}
+        go={go}
+        route={ROUTES.FRIENDS}
+        volume={volume}
+        flash={flash}
+      />
+      <Friends
+        id='friends'
+        textInput={textInput}
+        go={go}
+        route={ROUTES.HOME}
+      />
     </View>
   );
 };

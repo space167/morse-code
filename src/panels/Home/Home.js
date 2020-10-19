@@ -9,21 +9,23 @@ import {Slider} from "@vkontakte/vkui";
 import FormLayout from "@vkontakte/vkui/dist/components/FormLayout/FormLayout";
 import Header from "@vkontakte/vkui/dist/components/Header/Header";
 import Counter from "@vkontakte/vkui/dist/components/Counter/Counter";
-import Icon24Play from '@vkontakte/icons/dist/24/play';
 import Icon24Pause from '@vkontakte/icons/dist/24/pause';
 import bridge from '@vkontakte/vk-bridge';
-import SYMBOLS from '../config/morse';
+import SYMBOLS from '../../config/morse';
 import Icon24Settings from '@vkontakte/icons/dist/24/settings';
+import Icon24Send from '@vkontakte/icons/dist/24/send';
 
 import Icon24MicrophoneSlash from '@vkontakte/icons/dist/24/microphone_slash';
 import Icon24Voice from '@vkontakte/icons/dist/24/voice';
+import Icon24PlayNext from '@vkontakte/icons/dist/24/play_next';
 
-import point from '../assets/audio/-.mp3'
-import line from '../assets/audio/—.mp3'
+import point from '../../assets/audio/-.mp3'
+import line from '../../assets/audio/—.mp3'
 import Div from "@vkontakte/vkui/dist/components/Div/Div";
 import PanelHeaderButton from "@vkontakte/vkui/dist/components/PanelHeaderButton/PanelHeaderButton";
 
 import styles from './Home.module.css'
+import Tooltip from "@vkontakte/vkui/dist/components/Tooltip/Tooltip";
 
 const DEFAULT_PLAYBACK_SPEED = 2;
 
@@ -62,14 +64,16 @@ const language = 'ru';
 let statusPlay = false;
 let symbolePlay = '';
 
-const Home = ({id, volume, flash, setActiveModal}) => {
+const Home = ({id, route, volume, flash, textInput, setTextInput, go, setActiveModal}) => {
   const pointAudio = new Audio(point);
   const lineAudio = new Audio(line);
   const [playbackSpeed, setPlaybackSpeed] = useState(DEFAULT_PLAYBACK_SPEED);
 
+  const [tooltip, setTooltip] = useState(false);
+
   const [currentSymbole, setCurrentSymbole] = useState(0);
   const [symbole, setSymbole] = useState(null);
-  const [textInput, setTextInput] = useState('');
+
   const [playStatus, setPlayStatus] = useState(false);
   const [playStatusChar, setPlayStatusChar] = useState(false);
 
@@ -94,7 +98,14 @@ const Home = ({id, volume, flash, setActiveModal}) => {
 
   const onHandleChangeInput = (e) => {
     if (currentSymbole > 0) setCurrentSymbole(0);
-    setTextInput(e.target.value);
+    if ((e.target.value.match(/^[0-9А-Яа-яЁё\s]+$/)) || (e.target.value === '')) {
+      setTextInput(e.target.value);
+    } else {
+      setTooltip(true);
+      setTimeout(() => {
+        setTooltip(false);
+      }, 3500)
+    }
   };
 
   const onPlay = () => {
@@ -173,11 +184,11 @@ const Home = ({id, volume, flash, setActiveModal}) => {
       };
 
       if (volume) {
-        pointAudio.volume = 1
-        lineAudio.volume = 1
+        pointAudio.volume = 1;
+        lineAudio.volume = 1;
       } else {
-        pointAudio.volume = 0
-        lineAudio.volume = 0
+        pointAudio.volume = 0;
+        lineAudio.volume = 0;
       }
       if (arrayCode[i] === '-') {
 
@@ -201,6 +212,11 @@ const Home = ({id, volume, flash, setActiveModal}) => {
     }
   };
 
+  const inputFilled = (str) => {
+    let arr = str.split(' ');
+    let newStr = arr.join('');
+    return (newStr.length > 0);
+  };
 
   return (
     <Panel id={id}>
@@ -211,17 +227,25 @@ const Home = ({id, volume, flash, setActiveModal}) => {
       </PanelHeader>
       <FormLayout>
         <Group title="Input text">
-          <Cell>
-            <Header>
-              <span role='img' aria-label='Only russian language'>⚠</span> Только русские буквы
-            </Header>
-            <Input
-              disabled={playStatusChar || playStatus}
-              value={textInput}
-              pattern="^[0-9А-Яа-яЁё\s]+$"
-              placeholder="Введите сообщение"
-              onChange={onHandleChangeInput}
-            />
+          <Cell
+            asideContent={<Button onClick={() => go(route)}
+                                  disabled={(playStatusChar || playStatus) || (!inputFilled(textInput))} size="s"
+                                  mode="tertiary"><Icon24Send/></Button>}>
+            <Tooltip
+              text="Только цифры и русские буквы"
+              isShown={tooltip}
+              onClose={() => setTooltip(false)}
+            >
+              <Input
+                disabled={playStatusChar || playStatus}
+                type="text"
+                value={textInput}
+                maxLength="26"
+                pattern="^[0-9А-Яа-яЁё\s]+$"
+                placeholder="Введите сообщение"
+                onChange={onHandleChangeInput}
+              />
+            </Tooltip>
           </Cell>
           <Cell
             before={playStatusChar || playStatus ? <Icon24Voice/> : <Icon24MicrophoneSlash/>}
@@ -229,8 +253,8 @@ const Home = ({id, volume, flash, setActiveModal}) => {
             asideContent={playStatusChar || playStatus ?
               <Button className={styles['margin-small']} size='m'
                       onClick={onStop}><Icon24Pause/></Button> :
-              <Button disabled={playStatusChar} className={styles['margin-small']} size='m'
-                      onClick={onPlay}><Icon24Play/></Button>}
+              <Button disabled={playStatusChar || !inputFilled(textInput)} className={styles['margin-small']} size='m'
+                      onClick={onPlay}><Icon24PlayNext/></Button>}
           >
             {symbole ? <>{symbole.value[languages[language]]} {symbole.morse}</> : '...'}
           </Cell>
