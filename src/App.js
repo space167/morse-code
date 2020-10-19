@@ -22,11 +22,11 @@ const ROUTES = {
 
 const App = () => {
   const [popout, setPopout] = useState(<ScreenSpinner size='large'/>);
-  const [activePanel, setActivePanel] = useState(ROUTES.HOME)
+  const [activePanel, setActivePanel] = useState(ROUTES.FRIENDS)
   const [activeModal, setActiveModal] = useState(null);
   const [volume, setVolume] = useState(true);
   const [flash, setFlash] = useState(true);
-  const [textInput, setTextInput] = useState('');
+  const [textInput, setTextInput] = useState('привет');
 
   useEffect(() => {
     bridge.subscribe(({detail: {type, data}}) => {
@@ -36,7 +36,6 @@ const App = () => {
         document.body.attributes.setNamedItem(schemeAttribute);
       }
     });
-
     setPopout(null);
   }, []);
 
