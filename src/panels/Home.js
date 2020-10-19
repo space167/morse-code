@@ -11,19 +11,17 @@ import Header from "@vkontakte/vkui/dist/components/Header/Header";
 import Counter from "@vkontakte/vkui/dist/components/Counter/Counter";
 import Icon24Play from '@vkontakte/icons/dist/24/play';
 import Icon24Pause from '@vkontakte/icons/dist/24/pause';
-import Icon24Replay from '@vkontakte/icons/dist/24/replay';
-import Icon24Advertising from '@vkontakte/icons/dist/24/advertising';
 import bridge from '@vkontakte/vk-bridge';
 import SYMBOLS from '../config/morse';
 import Icon24Settings from '@vkontakte/icons/dist/24/settings';
-import Icon24Flash from '@vkontakte/icons/dist/24/flash';
-import Icon24Volume from '@vkontakte/icons/dist/24/volume';
+
+import Icon24MicrophoneSlash from '@vkontakte/icons/dist/24/microphone_slash';
+import Icon24Voice from '@vkontakte/icons/dist/24/voice';
 
 import point from '../assets/audio/-.mp3'
 import line from '../assets/audio/—.mp3'
 import Div from "@vkontakte/vkui/dist/components/Div/Div";
 import PanelHeaderButton from "@vkontakte/vkui/dist/components/PanelHeaderButton/PanelHeaderButton";
-import Checkbox from "@vkontakte/vkui/dist/components/Checkbox/Checkbox";
 
 import styles from './Home.module.css'
 
@@ -99,10 +97,6 @@ const Home = ({id, volume, flash, setActiveModal}) => {
     setTextInput(e.target.value);
   };
 
-  const onPause = () => {
-    setPlayStatus(false);
-  };
-
   const onPlay = () => {
     if (textInput.length > 0) {
       if (textInput.match(/^[0-9А-Яа-яЁё\s]+$/)) {
@@ -111,8 +105,9 @@ const Home = ({id, volume, flash, setActiveModal}) => {
     }
   };
 
-  const onReplay = () => {
+  const onStop = () => {
     setPlayStatus(false);
+    setPlayStatusChar(false);
     setCurrentSymbole(0);
   };
 
@@ -138,7 +133,7 @@ const Home = ({id, volume, flash, setActiveModal}) => {
 
   function playMorse(symbols, i) {
     if (symbols.length <= i) {
-      onReplay();
+      onStop();
       return;
     }
 
@@ -228,19 +223,16 @@ const Home = ({id, volume, flash, setActiveModal}) => {
               onChange={onHandleChangeInput}
             />
           </Cell>
-          <Cell>
-            {playStatus ?
+          <Cell
+            before={playStatusChar || playStatus ? <Icon24Voice/> : <Icon24MicrophoneSlash/>}
+            size="l"
+            asideContent={playStatusChar || playStatus ?
+              <Button className={styles['margin-small']} size='m'
+                      onClick={onStop}><Icon24Pause/></Button> :
               <Button disabled={playStatusChar} className={styles['margin-small']} size='m'
-                      onClick={onPause}><Icon24Pause/></Button> :
-              <Button disabled={playStatusChar} className={styles['margin-small']} size='m'
-                      onClick={onPlay}><Icon24Play/></Button>
-            }
-            <Button disabled={playStatusChar} className={styles['margin-small']} size='m' onClick={onReplay}>
-              <Icon24Replay/>
-            </Button>
-            <span className={styles['inline']}><Icon24Advertising/></span>
-            <Button className={styles['margin-small']} mode="secondary"
-                    size="m">{symbole ? <>{symbole.value[languages[language]]} {symbole.morse}</> : '...'}</Button>
+                      onClick={onPlay}><Icon24Play/></Button>}
+          >
+            {symbole ? <>{symbole.value[languages[language]]} {symbole.morse}</> : '...'}
           </Cell>
         </Group>
         <Group>
@@ -260,7 +252,7 @@ const Home = ({id, volume, flash, setActiveModal}) => {
         {SYMBOLS.map((symbole, i) => (
           <div className={styles['item']} key={i}>
             {typeof symbole.value[languages[language]] != 'undefined' &&
-            <Button disabled={playStatusChar || playStatus} onClick={() => playSymbole(symbole)}
+            <Button mode="secondary" disabled={playStatusChar || playStatus} onClick={() => playSymbole(symbole)}
                     size="s">{symbole.value[languages[language]]}<br/>{symbole.morse}</Button>}
           </div>
         ))}

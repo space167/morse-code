@@ -17,7 +17,7 @@ import Switch from "@vkontakte/vkui/dist/components/Switch/Switch";
 const App = () => {
   const [popout, setPopout] = useState(<ScreenSpinner size='large'/>);
   const [activeModal, setActiveModal] = useState(null);
-  const [volume, setVolume] = useState(false);
+  const [volume, setVolume] = useState(true);
   const [flash, setFlash] = useState(true);
 
   useEffect(() => {
