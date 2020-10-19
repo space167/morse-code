@@ -14,19 +14,28 @@ import Icon24Volume from "@vkontakte/icons/dist/24/volume";
 import Cell from "@vkontakte/vkui/dist/components/Cell/Cell";
 import Switch from "@vkontakte/vkui/dist/components/Switch/Switch";
 import Friends from "./panels/Friends/Friends";
+import ModalCard from "@vkontakte/vkui/dist/components/ModalCard/ModalCard";
+import Icon56CheckCircleOutline from '@vkontakte/icons/dist/56/check_circle_outline';
+import Icon56DoNotDisturbOutline from '@vkontakte/icons/dist/56/do_not_disturb_outline';
 
 const ROUTES = {
   HOME: 'home',
   FRIENDS: 'friends'
 };
 
+const MODALS = {
+  SETTINGS: 'settings',
+  SEND_ON_WALL: 'send_on_wall',
+  ERROR_ON_WALL: 'error_on_wall',
+}
+
 const App = () => {
   const [popout, setPopout] = useState(<ScreenSpinner size='large'/>);
-  const [activePanel, setActivePanel] = useState(ROUTES.FRIENDS)
+  const [activePanel, setActivePanel] = useState(ROUTES.HOME)
   const [activeModal, setActiveModal] = useState(null);
   const [volume, setVolume] = useState(true);
   const [flash, setFlash] = useState(true);
-  const [textInput, setTextInput] = useState('привет');
+  const [textInput, setTextInput] = useState('');
 
   useEffect(() => {
     bridge.subscribe(({detail: {type, data}}) => {
@@ -52,7 +61,7 @@ const App = () => {
       activeModal={activeModal}
       onClose={modalBack}>
       <ModalPage
-        id="settings"
+        id={MODALS.SETTINGS}
         onClose={modalBack}
         header={
           <ModalPageHeader>
@@ -69,6 +78,36 @@ const App = () => {
           </FormLayoutGroup>
         </FormLayout>
       </ModalPage>
+      <ModalCard
+        id={MODALS.SEND_ON_WALL}
+        onClose={() => setActiveModal(null)}
+        icon={<Icon56CheckCircleOutline/>}
+        header="Сообщение успешно отправлено"
+        actions={[{
+          title: 'Отлично',
+          mode: 'primary',
+          action: () => {
+            go(ROUTES.HOME);
+            setActiveModal(null);
+          }
+        }]}
+      >
+      </ModalCard>
+      <ModalCard
+        id={MODALS.ERROR_ON_WALL}
+        onClose={() => setActiveModal(null)}
+        icon={<Icon56DoNotDisturbOutline/>}
+        header="Сообщение недоставлено по неизвестным причинам"
+        actions={[{
+          title: 'Жаль',
+          mode: 'primary',
+          action: () => {
+            go(ROUTES.HOME);
+            setActiveModal(null);
+          }
+        }]}
+      >
+      </ModalCard>
     </ModalRoot>
   );
   return (
@@ -88,6 +127,7 @@ const App = () => {
         textInput={textInput}
         go={go}
         route={ROUTES.HOME}
+        setActiveModal={setActiveModal}
       />
     </View>
   );
