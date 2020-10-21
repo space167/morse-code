@@ -52,6 +52,7 @@ const Home = ({id, route, volume, flash, textInput, setTextInput, go, setActiveM
     if (symbols.length > 0) {
       setPlayStatus(true);
     }
+    setCurrentSymbol(0);
     setChars([]);
   }, [symbols]);
 
@@ -246,7 +247,7 @@ const Home = ({id, route, volume, flash, textInput, setTextInput, go, setActiveM
               <Button disabled={!inputFilled(textInput)} className={styles['margin-small']} size='m'
                       onClick={onStrToSymbols}><Icon24PlayNext/></Button>}
           >
-            {((playStatusSymbol && currentSymbol) < symbols.length) ? <>{symbols[currentSymbol].value} {symbols[currentSymbol].morse}</> : '...'}
+            {((playStatusSymbol && symbols[currentSymbol])) ? <>{symbols[currentSymbol].value} {symbols[currentSymbol].morse}</> : '...'}
           </Cell>
         </Group>
         <Group>
