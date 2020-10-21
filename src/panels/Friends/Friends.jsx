@@ -70,7 +70,7 @@ const Friends = ({id, route, go, textInput, setActiveModal}) => {
     <Panel id={id}>
       <PanelHeader left={<PanelHeaderBack onClick={() => go(route)}/>}>Отправка шифра</PanelHeader>
       <SimpleCell multiline>
-        <InfoRow header="Зашифровано/">
+        <InfoRow header="Зашифровано">
           {textInput}
         </InfoRow>
       </SimpleCell>

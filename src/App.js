@@ -33,8 +33,10 @@ const App = () => {
   const [popout, setPopout] = useState(<ScreenSpinner size='large'/>);
   const [activePanel, setActivePanel] = useState(ROUTES.HOME)
   const [activeModal, setActiveModal] = useState(null);
-  const [volume, setVolume] = useState(true);
-  const [flash, setFlash] = useState(true);
+  const [settings, setSettings] = useState({
+    volume: true,
+    flash: true
+  });
   const [textInput, setTextInput] = useState('');
 
   useEffect(() => {
@@ -69,10 +71,14 @@ const App = () => {
           </ModalPageHeader>}>
         <FormLayout>
           <FormLayoutGroup>
-            <Cell before={<Icon24Flash/>} asideContent={<Switch onChange={() => setFlash(!flash)} checked={flash}/>}>
+            <Cell before={<Icon24Flash/>}
+                  asideContent={<Switch onChange={() => setSettings({...settings, flash: !settings.flash})}
+                                        checked={settings.flash}/>}>
               Свет
             </Cell>
-            <Cell before={<Icon24Volume/>} asideContent={<Switch onChange={() => setVolume(!volume)} checked={volume}/>}>
+            <Cell before={<Icon24Volume/>}
+                  asideContent={<Switch onChange={() => setSettings({...settings, volume: !settings.volume})}
+                                        checked={settings.volume}/>}>
               Звук
             </Cell>
           </FormLayoutGroup>
@@ -119,8 +125,8 @@ const App = () => {
         setActiveModal={setActiveModal}
         go={go}
         route={ROUTES.FRIENDS}
-        volume={volume}
-        flash={flash}
+        volume={settings.volume}
+        flash={settings.flash}
       />
       <Friends
         id='friends'

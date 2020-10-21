@@ -142,6 +142,11 @@ const Home = ({id, route, volume, flash, textInput, setTextInput, go, setActiveM
     playMorse(arrSymbols, currentSymbole)
   }
 
+  const getVolume = () => {
+    if (volume) return 1;
+    return 0;
+  };
+
   function playMorse(symbols, i) {
     if (symbols.length <= i) {
       onStop();
@@ -183,13 +188,7 @@ const Home = ({id, route, volume, flash, textInput, setTextInput, go, setActiveM
         setTimeout(() => playCurrentCharacter(arrayCode, ++i, next), 300 / playbackSpeed);
       };
 
-      if (volume) {
-        pointAudio.volume = 1;
-        lineAudio.volume = 1;
-      } else {
-        pointAudio.volume = 0;
-        lineAudio.volume = 0;
-      }
+      lineAudio.volume = getVolume();
       if (arrayCode[i] === '-') {
 
         pointAudio.addEventListener("ended", onHandleEndedPoint);
@@ -197,6 +196,7 @@ const Home = ({id, route, volume, flash, textInput, setTextInput, go, setActiveM
           bridge.send("VKWebAppFlashSetLevel", {"level": 0.5});
         }
         setTimeout(() => {
+          pointAudio.volume = getVolume();
           pointAudio.play()
         }, 100)
 
@@ -206,6 +206,7 @@ const Home = ({id, route, volume, flash, textInput, setTextInput, go, setActiveM
           bridge.send("VKWebAppFlashSetLevel", {"level": 1});
         }
         setTimeout(() => {
+          lineAudio.volume = getVolume();
           lineAudio.play()
         }, 100)
       }
