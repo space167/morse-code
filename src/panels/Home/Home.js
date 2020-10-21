@@ -28,76 +28,103 @@ import styles from './Home.module.css'
 import Tooltip from "@vkontakte/vkui/dist/components/Tooltip/Tooltip";
 
 const DEFAULT_PLAYBACK_SPEED = 2;
-
-function throttle(callback, delay) {
-  let isThrottled = false, args, context;
-
-  function wrapper() {
-    if (isThrottled) {
-      args = arguments;
-      context = this;
-      return;
-    }
-
-    isThrottled = true;
-    callback.apply(this, arguments);
-
-    setTimeout(() => {
-      isThrottled = false;
-      if (args) {
-        wrapper.apply(context, args);
-        args = context = null;
-      }
-    }, delay);
-  }
-
-  return wrapper;
-}
-
-
-const languages = {
-  'ru': 0,
-  'en': 1
+const BASE_SPEED = 300;
+let audios = {
+  p: new Audio(point),
+  l: new Audio(line)
 };
-const language = 'ru';
 
-let statusPlay = false;
-let symbolePlay = '';
 
 const Home = ({id, route, volume, flash, textInput, setTextInput, go, setActiveModal}) => {
-  const pointAudio = new Audio(point);
-  const lineAudio = new Audio(line);
   const [playbackSpeed, setPlaybackSpeed] = useState(DEFAULT_PLAYBACK_SPEED);
-
   const [tooltip, setTooltip] = useState(false);
-
-  const [currentSymbole, setCurrentSymbole] = useState(0);
-  const [symbole, setSymbole] = useState(null);
+  //символы
+  const [symbols, setSymbols] = useState([]);
+  const [currentSymbol, setCurrentSymbol] = useState(0);
+  //знак Морзе
+  const [chars, setChars] = useState([]);
+  const [currentChar, setCurrentChar] = useState(0);
 
   const [playStatus, setPlayStatus] = useState(false);
-  const [playStatusChar, setPlayStatusChar] = useState(false);
+  const [playStatusSymbol, setPlayStatusSymbol] = useState(false);
 
   useEffect(() => {
-    statusPlay = playStatusChar;
-    if (playStatusChar) {
-      playMorse([symbolePlay], 0)
+    if (symbols.length > 0) {
+      setPlayStatus(true);
     }
-  }, [playStatusChar]);
+    setChars([]);
+  }, [symbols]);
 
   useEffect(() => {
-    statusPlay = playStatus;
+    if (symbols.length > 0) {
+      if (currentSymbol < symbols.length) {
+        setChars(symbols[currentSymbol].morse);
+      } else {
+        onStop();
+      }
+    } else {
+      onStop();
+    }
+    setCurrentChar(0);
+  }, [currentSymbol]);
+
+  useEffect(() => {
+    playChar();
+  }, [currentChar]);
+
+  useEffect(() => {
+    if (chars.length > 0) {
+      playChar();
+    }
+    setCurrentChar(0)
+  }, [chars]);
+
+  useEffect(() => {
     if (playStatus) {
-      playStr(textInput);
+      onPlaySymbols();
+    } else {
+      setPlayStatusSymbol(false);
+      setCurrentSymbol(0);
+      setSymbols([]);
     }
   }, [playStatus]);
 
-  const onPlayBackSpeedChange = throttle(speed => {
+  const onStop = () => {
+    setPlayStatus(false);
+  };
+
+  const onBtnToSymbols = (char) => {
+    let charN = Object.assign({}, char);
+    charN.morse = char.morse.split(' ');
+    setSymbols([charN]);
+  };
+
+  const onStrToSymbols = () => {
+    let arr = textInput.split(' ');
+    let newStr = arr.join('').toUpperCase();
+    let arrSymbols = [];
+
+    for (let i = 0; i < newStr.length; i++) {
+      for (let j = 0; j < SYMBOLS.length; j++) {
+        if (SYMBOLS[j].value.indexOf(newStr[i]) !== -1) {
+          let temp = Object.assign({}, SYMBOLS[j]);
+          temp.morse = SYMBOLS[j].morse.split(' ');
+          arrSymbols.push(temp);
+          break;
+        }
+      }
+    }
+    setSymbols(arrSymbols);
+  };
+
+  //change play speed
+  const onPlayBackSpeedChange = speed => {
     if (speed === playbackSpeed) return;
     setPlaybackSpeed(speed);
-  });
+  };
 
+  //process input
   const onHandleChangeInput = (e) => {
-    if (currentSymbole > 0) setCurrentSymbole(0);
     if ((e.target.value.match(/^[0-9А-Яа-яЁё\s]+$/)) || (e.target.value === '')) {
       setTextInput(e.target.value);
     } else {
@@ -107,116 +134,78 @@ const Home = ({id, route, volume, flash, textInput, setTextInput, go, setActiveM
       }, 3500)
     }
   };
-
-  const onPlay = () => {
-    if (textInput.length > 0) {
-      if (textInput.match(/^[0-9А-Яа-яЁё\s]+$/)) {
-        setPlayStatus(true);
-      }
-    }
-  };
-
-  const onStop = () => {
-    setPlayStatus(false);
-    setPlayStatusChar(false);
-    setCurrentSymbole(0);
-  };
-
-  const playSymbole = (symbole) => {
-    symbolePlay = symbole;
-    setPlayStatusChar(true);
-  };
-
-  function playStr(str) {
-    let arr = str.split(' ');
-    let newStr = arr.join('').toUpperCase();
-    let arrSymbols = [];
-    for (let i = 0; i < newStr.length; i++) {
-      for (let j = 0; j < SYMBOLS.length; j++) {
-        if (SYMBOLS[j].value.indexOf(newStr[i]) !== -1) {
-          arrSymbols.push(SYMBOLS[j]);
-          break;
-        }
-      }
-    }
-    playMorse(arrSymbols, currentSymbole)
-  }
-
-  const getVolume = () => {
-    if (volume) return 1;
-    return 0;
-  };
-
-  function playMorse(symbols, i) {
-    if (symbols.length <= i) {
-      onStop();
-      return;
-    }
-
-    if (!statusPlay) {
-      return;
-    }
-
-    setCurrentSymbole(i);
-    let symbole = symbols[i];
-    setSymbole(symbole);
-    let arrayCode = symbole.morse.split(' ');
-    playCurrentCharacter(arrayCode, 0, () => playMorse(symbols, ++i));
-
-    function playCurrentCharacter(arrayCode, i, next) {
-      if (arrayCode.length <= i) {
-        setSymbole(null);
-        setPlayStatusChar(false);
-        setTimeout(next, 800 / playbackSpeed);
-        return;
-      }
-
-      if (!statusPlay) {
-        setSymbole(null);
-        return;
-      }
-
-      const onHandleEndedPoint = () => {
-        pointAudio.removeEventListener("ended", onHandleEndedPoint);
-        bridge.send("VKWebAppFlashSetLevel", {"level": 0});
-        setTimeout(() => playCurrentCharacter(arrayCode, ++i, next), 300 / playbackSpeed);
-      };
-
-      const onHandleEndedLine = () => {
-        lineAudio.removeEventListener("ended", onHandleEndedLine);
-        bridge.send("VKWebAppFlashSetLevel", {"level": 0});
-        setTimeout(() => playCurrentCharacter(arrayCode, ++i, next), 300 / playbackSpeed);
-      };
-
-      lineAudio.volume = getVolume();
-      if (arrayCode[i] === '-') {
-
-        pointAudio.addEventListener("ended", onHandleEndedPoint);
-        if (flash) {
-          bridge.send("VKWebAppFlashSetLevel", {"level": 0.5});
-        }
-        setTimeout(() => {
-          pointAudio.volume = getVolume();
-          pointAudio.play()
-        }, 100)
-
-      } else {
-        lineAudio.addEventListener("ended", onHandleEndedLine);
-        if (flash) {
-          bridge.send("VKWebAppFlashSetLevel", {"level": 1});
-        }
-        setTimeout(() => {
-          lineAudio.volume = getVolume();
-          lineAudio.play()
-        }, 100)
-      }
-    }
-  };
-
+  //check fill input
   const inputFilled = (str) => {
     let arr = str.split(' ');
     let newStr = arr.join('');
     return (newStr.length > 0);
+  };
+
+  const onPlaySymbols = () => {
+    if ((symbols.length === 0) || (!playStatus)) {
+      onStop();
+      return;
+    }
+    setChars(symbols[currentSymbol].morse);
+  };
+
+  const playChar = () => {
+    if (currentChar >= chars.length) {
+      if (currentSymbol < symbols.length) {
+        setTimeout(() => {
+          setCurrentSymbol(currentSymbol + 1)
+        }, (BASE_SPEED * 5) / playbackSpeed);
+        return;
+      } else {
+        onStop();
+        return;
+      }
+    }
+
+    if (!playStatus) {
+      onStop();
+      return;
+    }
+
+    setPlayStatusSymbol(true);
+    const onHandleEndedL = () => {
+      audios.l.removeEventListener("ended", onHandleEndedL);
+      bridge.send("VKWebAppFlashSetLevel", {"level": 0});
+      setTimeout(() => {
+        setCurrentChar(currentChar + 1);
+      }, BASE_SPEED / playbackSpeed);
+    };
+
+    const onHandleEndedP = () => {
+      audios.p.removeEventListener("ended", onHandleEndedP);
+      bridge.send("VKWebAppFlashSetLevel", {"level": 0});
+      setTimeout(() => {
+        setCurrentChar(currentChar + 1);
+      }, BASE_SPEED / playbackSpeed);
+    };
+
+    if (flash) {
+      bridge.send("VKWebAppFlashSetLevel", {"level": 1});
+    }
+    if (chars[currentChar] === '-') {
+      audios.p.addEventListener("ended", onHandleEndedP);
+      setTimeout(() => {
+        audios.p.volume = getVolume();
+        audios.p.play()
+      }, 100)
+    } else {
+      audios.l.addEventListener("ended", onHandleEndedL);
+      setTimeout(() => {
+        audios.l.volume = getVolume();
+        audios.l.play()
+      }, 100)
+    }
+  };
+
+
+  const getVolume = () => {
+    if (volume) return 1;
+    return 0;
   };
 
   return (
@@ -230,7 +219,7 @@ const Home = ({id, route, volume, flash, textInput, setTextInput, go, setActiveM
         <Group title="Input text">
           <Cell
             asideContent={<Button onClick={() => go(route)}
-                                  disabled={(playStatusChar || playStatus) || (!inputFilled(textInput))} size="s"
+                                  disabled={playStatus || (!inputFilled(textInput))} size="s"
                                   mode="tertiary"><Icon24Send/></Button>}>
             <Tooltip
               text="Только цифры и русские буквы"
@@ -238,7 +227,7 @@ const Home = ({id, route, volume, flash, textInput, setTextInput, go, setActiveM
               onClose={() => setTooltip(false)}
             >
               <Input
-                disabled={playStatusChar || playStatus}
+                disabled={playStatus}
                 type="text"
                 value={textInput}
                 maxLength="20"
@@ -249,15 +238,15 @@ const Home = ({id, route, volume, flash, textInput, setTextInput, go, setActiveM
             </Tooltip>
           </Cell>
           <Cell
-            before={playStatusChar || playStatus ? <Icon24Voice/> : <Icon24MicrophoneSlash/>}
+            before={playStatusSymbol ? <Icon24Voice/> : <Icon24MicrophoneSlash/>}
             size="l"
-            asideContent={playStatusChar || playStatus ?
+            asideContent={playStatus ?
               <Button className={styles['margin-small']} size='m'
                       onClick={onStop}><Icon24Pause/></Button> :
-              <Button disabled={playStatusChar || !inputFilled(textInput)} className={styles['margin-small']} size='m'
-                      onClick={onPlay}><Icon24PlayNext/></Button>}
+              <Button disabled={!inputFilled(textInput)} className={styles['margin-small']} size='m'
+                      onClick={onStrToSymbols}><Icon24PlayNext/></Button>}
           >
-            {symbole ? <>{symbole.value[languages[language]]} {symbole.morse}</> : '...'}
+            {((playStatusSymbol && currentSymbol) < symbols.length) ? <>{symbols[currentSymbol].value} {symbols[currentSymbol].morse}</> : '...'}
           </Cell>
         </Group>
         <Group>
@@ -265,6 +254,7 @@ const Home = ({id, route, volume, flash, textInput, setTextInput, go, setActiveM
             <span role='img' aria-label='Speed play'>⏱</span> Скорость
           </Header>
           <Slider
+            disabled={playStatus}
             step={0.1}
             min={0.5}
             max={3}
@@ -274,11 +264,12 @@ const Home = ({id, route, volume, flash, textInput, setTextInput, go, setActiveM
         </Group>
       </FormLayout>
       <Div className={styles['container-items']}>
-        {SYMBOLS.map((symbole, i) => (
+        {SYMBOLS.map((symbol, i) => (
           <div className={styles['item']} key={i}>
-            {typeof symbole.value[languages[language]] != 'undefined' &&
-            <Button mode="secondary" disabled={playStatusChar || playStatus} onClick={() => playSymbole(symbole)}
-                    size="s">{symbole.value[languages[language]]}<br/>{symbole.morse}</Button>}
+            <Button mode="secondary"
+                    disabled={playStatus}
+                    onClick={() => onBtnToSymbols(symbol)}
+                    size="s">{symbol.value}<br/>{symbol.morse}</Button>
           </div>
         ))}
       </Div>

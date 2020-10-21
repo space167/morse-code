@@ -1,170 +1,170 @@
 const SYMBOLS = [
   {
-    value: ['1'],
+    value: '1',
     morse: "- — — — —"
   },
   {
-    value: ['2'],
+    value: '2',
     morse: "- - — — —"
   },
   {
-    value: ['3'],
+    value: '3',
     morse: "- - - — —"
   },
   {
-    value: ['4'],
+    value: '4',
     morse: "- - - - —"
   },
   {
-    value: ['5'],
+    value: '5',
     morse: "- - - - -"
   },
   {
-    value: ['6'],
+    value: '6',
     morse: "— - - - -"
   },
   {
-    value: ['7'],
+    value: '7',
     morse: "— — - - -"
   },
   {
-    value: ['8'],
+    value: '8',
     morse: "— — — - -"
   },
   {
-    value: ['9'],
+    value: '9',
     morse: "— — — — -"
   },
   {
-    value: ['0'],
+    value: '0',
     morse: "— — — — —"
   },
   {
-    value: ['А', 'A'],
+    value: 'А',
     morse: "- —"
   },
   {
-    value: ['Б', 'B'],
+    value: 'Б',
     morse: "— - - -"
   },
   {
-    value: ['В', 'W'],
+    value: 'В',
     morse: "- — —"
   },
   {
-    value: ['Г', 'G'],
+    value: 'Г',
     morse: "— — -"
   },
   {
-    value: ['Д', 'D'],
+    value: 'Д',
     morse: "— - -"
   },
   {
-    value: ['Е', 'E'],
+    value: 'Е',
     morse: "-"
   },
   {
-    value: ['Ж', 'V'],
+    value: 'Ж',
     morse: "- - - —"
   },
   {
-    value: ['З', 'Z'],
+    value: 'З',
     morse: "— — - -"
   },
   {
-    value: ['И', 'I'],
+    value: 'И',
     morse: "- -"
   },
   {
-    value: ['Й', 'J'],
+    value: 'Й',
     morse: "- — — —"
   },
   {
-    value: ['К', 'K'],
+    value: 'К',
     morse: "— - —"
   },
   {
-    value: ['Л', 'L'],
+    value: 'Л',
     morse: "- — - -"
   },
   {
-    value: ['М', 'M'],
+    value: 'М',
     morse: "— —"
   },
   {
-    value: ['Н', 'N'],
+    value: 'Н',
     morse: "— -"
   },
   {
-    value: ['О', 'O'],
+    value: 'О',
     morse: "— — —"
   },
   {
-    value: ['П', 'P'],
+    value: 'П',
     morse: "- — — -"
   },
   {
-    value: ['Р', 'R'],
+    value: 'Р',
     morse: "- — -"
   },
   {
-    value: ['С', 'S'],
+    value: 'С',
     morse: "- - -"
   },
   {
-    value: ['Т', 'T'],
+    value: 'Т',
     morse: "—"
   },
   {
-    value: ['У', 'U'],
+    value: 'У',
     morse: "- - —"
   },
   {
-    value: ['Ф', 'F'],
+    value: 'Ф',
     morse: "- - — -"
   },
   {
-    value: ['Х', 'H'],
+    value: 'Х',
     morse: "- - - -"
   },
   {
-    value: ['Ц', 'C'],
+    value: 'Ц',
     morse: "— - — -"
   },
   {
-    value: ['Ч'],
+    value: 'Ч',
     morse: "— — — -"
   },
   {
-    value: ['Ш'],
+    value: 'Ш',
     morse: "— — — —"
   },
   {
-    value: ['Щ'],
+    value: 'Щ',
     morse: "— — - —"
   },
   {
-    value: ['Ъ'],
+    value: 'Ъ',
     morse: "— — - — —"
   },
   {
-    value: ['Ы', 'Y'],
+    value: 'Ы',
     morse: "— - — —"
   },
   {
-    value: ['Ь', 'X'],
+    value: 'Ь',
     morse: "— - - —"
   },
   {
-    value: ['Э'],
+    value: 'Э',
     morse: "- - — - -"
   },
   {
-    value: ['Ю'],
+    value: 'Ю',
     morse: "- - — —"
   },
   {
-    value: ['Я'],
+    value: 'Я',
     morse: "- — - —"
   },
 ];
