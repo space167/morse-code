@@ -15,7 +15,6 @@ import SYMBOLS from '../../config/morse';
 import Icon24Settings from '@vkontakte/icons/dist/24/settings';
 import Icon24Send from '@vkontakte/icons/dist/24/send';
 
-import Icon24MicrophoneSlash from '@vkontakte/icons/dist/24/microphone_slash';
 import Icon24Voice from '@vkontakte/icons/dist/24/voice';
 import Icon24PlayNext from '@vkontakte/icons/dist/24/play_next';
 
@@ -231,7 +230,7 @@ const Home = ({id, route, volume, flash, textInput, setTextInput, go, setActiveM
                 disabled={playStatus}
                 type="text"
                 value={textInput}
-                maxLength="20"
+                maxLength="25"
                 pattern="^[0-9А-Яа-яЁё\s]+$"
                 placeholder="Введите сообщение"
                 onChange={onHandleChangeInput}
@@ -239,7 +238,7 @@ const Home = ({id, route, volume, flash, textInput, setTextInput, go, setActiveM
             </Tooltip>
           </Cell>
           <Cell
-            before={playStatusSymbol ? <Icon24Voice/> : <Icon24MicrophoneSlash/>}
+            before={playStatusSymbol ? <Icon24Voice/> : ''}
             size="l"
             asideContent={playStatus ?
               <Button className={styles['margin-small']} size='m'
@@ -247,7 +246,7 @@ const Home = ({id, route, volume, flash, textInput, setTextInput, go, setActiveM
               <Button disabled={!inputFilled(textInput)} className={styles['margin-small']} size='m'
                       onClick={onStrToSymbols}><Icon24PlayNext/></Button>}
           >
-            {((playStatusSymbol && symbols[currentSymbol])) ? <>{symbols[currentSymbol].value} {symbols[currentSymbol].morse}</> : '...'}
+            {((playStatusSymbol && symbols[currentSymbol])) ? <>{symbols[currentSymbol].value} {symbols[currentSymbol].morse}</> : ''}
           </Cell>
         </Group>
         <Group>
