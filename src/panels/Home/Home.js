@@ -24,6 +24,7 @@ const Home = (
     decodeMorse,
     setMorseInput,
     setTextInput,
+    openSendMenu,
     go
   }) => {
 
@@ -85,8 +86,8 @@ const Home = (
             />
           </Tooltip>
           <Div>
-            <Card>
-              {morseCode}
+            <Card style={{padding: "5px"}}>
+              {morseCode ? morseCode : '...'}
             </Card>
           </Div>
           <Div>
@@ -95,11 +96,13 @@ const Home = (
               stretched
               after={<Icon24Send/>}
               disabled={!inputFilled(textInput)}
-              onClick={() => go(routes.FRIENDS)}
+              onClick={openSendMenu}
             >Отправить</Button>
           </Div>
         </Group>
-        <Group header={<Header mode="secondary">Дешифратор</Header>}>
+        <Group
+          header={<><Header mode="secondary">Дешифратор</Header></>}
+        >
           <Tooltip
             text="Только симолвы *, -, /"
             isShown={tooltipMorse}
@@ -115,8 +118,8 @@ const Home = (
             />
           </Tooltip>
           <Div>
-            <Card>
-              {decodeMorse}
+            <Card style={{padding: "5px"}}>
+              {decodeMorse ? decodeMorse : '...'}
             </Card>
           </Div>
         </Group>

@@ -15,6 +15,12 @@ import Icon24Error from "@vkontakte/icons/dist/24/error";
 import Intro from "./panels/Intro/Intro";
 import {morseToStr, strToMorse} from "./utils/functions";
 import TableSymbols from "./panels/TableSymbols/TableSymbols";
+import ActionSheetItem from "@vkontakte/vkui/dist/components/ActionSheetItem/ActionSheetItem";
+import ActionSheet from "@vkontakte/vkui/dist/components/ActionSheet/ActionSheet";
+
+import Icon28Messages from '@vkontakte/icons/dist/28/messages';
+import Icon28HistoryForwardOutline from '@vkontakte/icons/dist/28/history_forward_outline';
+import Icon28Newsfeed from '@vkontakte/icons/dist/28/newsfeed';
 
 const ROUTES = {
   INTRO: 'intro',
@@ -34,7 +40,7 @@ const STORAGE_KEYS = {
 };
 
 const App = () => {
-  const [popout, setPopout] = useState(<ScreenSpinner size='large'/>);
+  const [popout, setPopout] = useState(null);
   const [activePanel, setActivePanel] = useState(ROUTES.INTRO);
   const [fetchedUser, setUser] = useState(null);
   const [activeModal, setActiveModal] = useState(null);
@@ -143,6 +149,24 @@ const App = () => {
     setActivePanel(panel);
   };
 
+  const openSendMenu = () => {
+    setPopout(
+      <ActionSheet onClose={() => setPopout(null)}>
+        <ActionSheetItem autoclose before={<Icon28Messages/>}>
+          В личные сообщения
+        </ActionSheetItem>
+        <ActionSheetItem autoclose before={<Icon28Newsfeed/>}>
+          На стену
+        </ActionSheetItem>
+        <ActionSheetItem autoclose before={<Icon28HistoryForwardOutline/>}>
+          В историю
+        </ActionSheetItem>
+        {platform === IOS && <ActionSheetItem autoclose mode="cancel">Отменить</ActionSheetItem>}
+      </ActionSheet>
+    )
+  }
+
+
   const modal = (
     <ModalRoot
       isBack={false}
@@ -197,6 +221,7 @@ const App = () => {
         setTextInput={setTextInput}
         setMorseInput={setMorseInput}
         setActiveModal={setActiveModal}
+        openSendMenu={openSendMenu}
         go={go}
         routes={ROUTES}
       />

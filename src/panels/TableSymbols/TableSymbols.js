@@ -7,6 +7,7 @@ import Div from "@vkontakte/vkui/dist/components/Div/Div";
 import styles from "./TableSymbols.module.css"
 import Group from "@vkontakte/vkui/dist/components/Group/Group";
 import Header from "@vkontakte/vkui/dist/components/Header/Header";
+import Text from "@vkontakte/vkui/dist/components/Typography/Text/Text";
 
 const TableSymbols = ({id, route, go}) => {
   let numbers = [];
@@ -27,7 +28,7 @@ const TableSymbols = ({id, route, go}) => {
       <Group header={<Header mode="secondary">Цифры</Header>}>
         <Div className={styles['items']}>
           {numbers.map((sym, i) => (
-            <div className={styles['item']} key={i}>{sym.value}<br/>{sym.morse}</div>
+            <Text weight="regular" className={styles['item']} key={i}>{sym.value}<br/>{sym.morse}</Text>
           ))}
         </Div>
       </Group>
