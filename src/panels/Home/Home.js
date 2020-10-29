@@ -1,19 +1,14 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import Panel from '@vkontakte/vkui/dist/components/Panel/Panel';
 import PanelHeader from '@vkontakte/vkui/dist/components/PanelHeader/PanelHeader';
 import Group from '@vkontakte/vkui/dist/components/Group/Group';
-import Cell from '@vkontakte/vkui/dist/components/Cell/Cell';
 import Input from "@vkontakte/vkui/dist/components/Input/Input";
 import Button from "@vkontakte/vkui/dist/components/Button/Button";
 import FormLayout from "@vkontakte/vkui/dist/components/FormLayout/FormLayout";
-import bridge from '@vkontakte/vk-bridge';
-import SYMBOLS from '../../config/morse';
-import Icon24Settings from '@vkontakte/icons/dist/24/settings';
 import Icon24Send from '@vkontakte/icons/dist/24/send';
 import PanelHeaderButton from "@vkontakte/vkui/dist/components/PanelHeaderButton/PanelHeaderButton";
 import Icon28SubtitlesOutline from '@vkontakte/icons/dist/28/subtitles_outline';
 
-import styles from './Home.module.css'
 import Tooltip from "@vkontakte/vkui/dist/components/Tooltip/Tooltip";
 import Card from "@vkontakte/vkui/dist/components/Card/Card";
 import Div from "@vkontakte/vkui/dist/components/Div/Div";

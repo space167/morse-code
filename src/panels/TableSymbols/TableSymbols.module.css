@@ -1,0 +1,8 @@
+.items {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+}
+
+.item {
+  text-align: center;
+}
