@@ -11,39 +11,50 @@ import SYMBOLS from '../../config/morse';
 import Icon24Settings from '@vkontakte/icons/dist/24/settings';
 import Icon24Send from '@vkontakte/icons/dist/24/send';
 import PanelHeaderButton from "@vkontakte/vkui/dist/components/PanelHeaderButton/PanelHeaderButton";
+import Icon28SubtitlesOutline from '@vkontakte/icons/dist/28/subtitles_outline';
 
 import styles from './Home.module.css'
 import Tooltip from "@vkontakte/vkui/dist/components/Tooltip/Tooltip";
+import Card from "@vkontakte/vkui/dist/components/Card/Card";
+import Div from "@vkontakte/vkui/dist/components/Div/Div";
+import Header from "@vkontakte/vkui/dist/components/Header/Header";
 
-const Home = ({id, route, textInput, setTextInput, go}) => {
+const Home = (
+  {
+    id,
+    routes,
+    textInput,
+    morseCode,
+    morseInput,
+    decodeMorse,
+    setMorseInput,
+    setTextInput,
+    go
+  }) => {
+
   const [tooltip, setTooltip] = useState(false);
-  //символы
-
-  const onStrToSymbols = () => {
-    let arr = textInput.split(' ');
-    let newStr = arr.join('').toUpperCase();
-    let arrSymbols = [];
-    for (let i = 0; i < newStr.length; i++) {
-      for (let j = 0; j < SYMBOLS.length; j++) {
-        if (SYMBOLS[j].value.indexOf(newStr[i]) !== -1) {
-          let temp = Object.assign({}, SYMBOLS[j]);
-          temp.morse = SYMBOLS[j].morse.split(' ');
-          arrSymbols.push(temp);
-          break;
-        }
-      }
-    }
-  };
-
+  const [tooltipMorse, setTooltipMorse] = useState(false);
 
   //process input
   const onHandleChangeInput = (e) => {
-    if ((e.target.value.match(/^[0-9А-Яа-яЁёA-Za-z\s]+$/)) || (e.target.value === '')) {
+    if ((e.target.value.match(/^[0-9А-Яа-яЁё\s]+$/)) || (e.target.value === '')) {
       setTextInput(e.target.value);
     } else {
       setTooltip(true);
       setTimeout(() => {
         setTooltip(false);
+      }, 3500)
+    }
+  };
+
+  //process input morse code
+  const onHandleChangeMorseCode = (e) => {
+    if ((e.target.value.match(/^[-\/*/]+$/)) || (e.target.value === '')) {
+      setMorseInput(e.target.value);
+    } else {
+      setTooltipMorse(true);
+      setTimeout(() => {
+        setTooltipMorse(false);
       }, 3500)
     }
   };
@@ -58,29 +69,61 @@ const Home = ({id, route, textInput, setTextInput, go}) => {
   return (
     <Panel id={id}>
       <PanelHeader
-        left={<PanelHeaderButton><Icon24Settings/></PanelHeaderButton>}
+        left={<PanelHeaderButton onClick={() => go(routes.TABLE_SYMBOLS)}><Icon28SubtitlesOutline/></PanelHeaderButton>}
       >
         Морзянка
       </PanelHeader>
       <FormLayout>
-        <Group title="Input text">
-          <Cell
-            asideContent={<Button disabled={() => !inputFilled(textInput)} onClick={() => go(route)} size="s" mode="tertiary"><Icon24Send/></Button>}>
-            <Tooltip
-              text="Только цифры и русские/английские буквы"
-              isShown={tooltip}
-              onClose={() => setTooltip(false)}
-            >
-              <Input
-                type="text"
-                value={textInput}
-                maxLength="25"
-                pattern="^[0-9А-Яа-яЁёA-Za-z\s]+$"
-                placeholder="Введите сообщение"
-                onChange={onHandleChangeInput}
-              />
-            </Tooltip>
-          </Cell>
+        <Group header={<Header mode="secondary">Шифратор</Header>}>
+          <Tooltip
+            text="Только цифры и русские буквы"
+            isShown={tooltip}
+            onClose={() => setTooltip(false)}
+          >
+            <Input
+              type="text"
+              value={textInput}
+              maxLength="40"
+              pattern="^[0-9А-Яа-яЁё\s]+$"
+              placeholder="Введите сообщение"
+              onChange={onHandleChangeInput}
+            />
+          </Tooltip>
+          <Div>
+            <Card>
+              {morseCode}
+            </Card>
+          </Div>
+          <Div>
+            <Button
+              size="xl"
+              stretched
+              after={<Icon24Send/>}
+              disabled={!inputFilled(textInput)}
+              onClick={() => go(routes.FRIENDS)}
+            >Отправить</Button>
+          </Div>
+        </Group>
+        <Group header={<Header mode="secondary">Дешифратор</Header>}>
+          <Tooltip
+            text="Только симолвы *, -, /"
+            isShown={tooltipMorse}
+            onClose={() => setTooltipMorse(false)}
+          >
+            <Input
+              type="text"
+              value={morseInput}
+              maxLength="500"
+              pattern="^[-\/*/\s]+$"
+              placeholder="Введите шифр"
+              onChange={onHandleChangeMorseCode}
+            />
+          </Tooltip>
+          <Div>
+            <Card>
+              {decodeMorse}
+            </Card>
+          </Div>
         </Group>
       </FormLayout>
     </Panel>

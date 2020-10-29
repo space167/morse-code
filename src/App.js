@@ -13,12 +13,14 @@ import Snackbar from "@vkontakte/vkui/dist/components/Snackbar/Snackbar";
 import Avatar from "@vkontakte/vkui/dist/components/Avatar/Avatar";
 import Icon24Error from "@vkontakte/icons/dist/24/error";
 import Intro from "./panels/Intro/Intro";
+import {morseToStr, strToMorse} from "./utils/functions";
+import TableSymbols from "./panels/TableSymbols/TableSymbols";
 
 const ROUTES = {
   INTRO: 'intro',
   HOME: 'home',
   SEND: 'send',
-  TABLE_MORSE: 'table_morse',
+  TABLE_SYMBOLS: 'table_symbols',
   FRIENDS: 'friends'
 };
 
@@ -36,16 +38,26 @@ const App = () => {
   const [activePanel, setActivePanel] = useState(ROUTES.INTRO);
   const [fetchedUser, setUser] = useState(null);
   const [activeModal, setActiveModal] = useState(null);
-  const [textInput, setTextInput] = useState('');
-  const [morseCode, setMorseCode] = useState('');
+
   const [snackbar, setSnackbar] = useState(null);
   const [userHasSeenIntro, setUserHasSeenIntro] = useState(false);
   const [fetchedState, setFetchedState] = useState(null);
+  //шифратор
+  const [textInput, setTextInput] = useState('');
+  const [morseCode, setMorseCode] = useState('');
+  //дешифратор
+  const [morseInput, setMorseInput] = useState('');
+  const [decodeMorse, setDecodeMorse] = useState('');
+
   const platform = usePlatform();
 
   useEffect(() => {
-    setMorseCode('MORSE CODE')
+    setMorseCode(strToMorse(textInput));
   }, [textInput]);
+
+  useEffect(() => {
+    setDecodeMorse(morseToStr(morseInput));
+  }, [morseInput]);
 
   const viewIntro = async (panel) => {
     try {
@@ -177,12 +189,21 @@ const App = () => {
         route={ROUTES.HOME}
         userHasSeenIntro={userHasSeenIntro}/>
       <Home
-        id='home'
+        id={ROUTES.HOME}
         textInput={textInput}
+        morseCode={morseCode}
+        decodeMorse={decodeMorse}
+        morseInput={morseInput}
         setTextInput={setTextInput}
+        setMorseInput={setMorseInput}
         setActiveModal={setActiveModal}
         go={go}
-        route={ROUTES.FRIENDS}
+        routes={ROUTES}
+      />
+      <TableSymbols
+        id={ROUTES.TABLE_SYMBOLS}
+        route={ROUTES.HOME}
+        go={go}
       />
       {/*<Friends*/}
       {/*id='friends'*/}
