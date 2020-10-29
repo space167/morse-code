@@ -149,7 +149,7 @@ const SYMBOLS = [
   },
   {
     value: 'Ъ',
-    morse: "— — - — —"
+    morse: "- — — - — -"
   },
   {
     value: 'Ы',
