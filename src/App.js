@@ -5,65 +5,74 @@ import ScreenSpinner from '@vkontakte/vkui/dist/components/ScreenSpinner/ScreenS
 import '@vkontakte/vkui/dist/vkui.css';
 import Home from './panels/Home/Home';
 import ModalRoot from "@vkontakte/vkui/dist/components/ModalRoot/ModalRoot";
-import ModalPage from "@vkontakte/vkui/dist/components/ModalPage/ModalPage";
-import FormLayout from "@vkontakte/vkui/dist/components/FormLayout/FormLayout";
-import FormLayoutGroup from "@vkontakte/vkui/dist/components/FormLayoutGroup/FormLayoutGroup";
-import Icon24Flash from "@vkontakte/icons/dist/24/flash";
-import Icon24Volume from "@vkontakte/icons/dist/24/volume";
-import Cell from "@vkontakte/vkui/dist/components/Cell/Cell";
-import Switch from "@vkontakte/vkui/dist/components/Switch/Switch";
-import Friends from "./panels/Friends/Friends";
 import ModalCard from "@vkontakte/vkui/dist/components/ModalCard/ModalCard";
 import Icon56CheckCircleOutline from '@vkontakte/icons/dist/56/check_circle_outline';
 import Icon56DoNotDisturbOutline from '@vkontakte/icons/dist/56/do_not_disturb_outline';
 import {ModalPageHeader, ANDROID, IOS, usePlatform} from '@vkontakte/vkui';
-import PanelHeaderButton from "@vkontakte/vkui/dist/components/PanelHeaderButton/PanelHeaderButton";
-import Icon24Done from "@vkontakte/icons/dist/24/done";
 import Snackbar from "@vkontakte/vkui/dist/components/Snackbar/Snackbar";
 import Avatar from "@vkontakte/vkui/dist/components/Avatar/Avatar";
 import Icon24Error from "@vkontakte/icons/dist/24/error";
-import Icon24Cancel from "@vkontakte/icons/dist/24/cancel";
+import Intro from "./panels/Intro/Intro";
 
 const ROUTES = {
+  INTRO: 'intro',
   HOME: 'home',
+  SEND: 'send',
+  TABLE_MORSE: 'table_morse',
   FRIENDS: 'friends'
 };
 
 const MODALS = {
-  SETTINGS: 'settings',
   SEND_ON_WALL: 'send_on_wall',
   ERROR_ON_WALL: 'error_on_wall',
 };
 
+const STORAGE_KEYS = {
+  STATUS: 'viewStatus',
+};
 
 const App = () => {
   const [popout, setPopout] = useState(<ScreenSpinner size='large'/>);
-  const [activePanel, setActivePanel] = useState(ROUTES.HOME);
+  const [activePanel, setActivePanel] = useState(ROUTES.INTRO);
+  const [fetchedUser, setUser] = useState(null);
   const [activeModal, setActiveModal] = useState(null);
-  const [settings, setSettings] = useState();
-
   const [textInput, setTextInput] = useState('');
+  const [morseCode, setMorseCode] = useState('');
   const [snackbar, setSnackbar] = useState(null);
+  const [userHasSeenIntro, setUserHasSeenIntro] = useState(false);
+  const [fetchedState, setFetchedState] = useState(null);
   const platform = usePlatform();
 
-  const setStorage = async function (props) {
-    await bridge.send('VKWebAppStorageSet', {
-      key: 'settings',
-      value: JSON.stringify(props)
-    });
+  useEffect(() => {
+    setMorseCode('MORSE CODE')
+  }, [textInput]);
+
+  const viewIntro = async (panel) => {
+    try {
+      await bridge.send('VKWebAppStorageSet', {
+        key: STORAGE_KEYS.STATUS,
+        value: JSON.stringify({
+          hasSeenIntro: true,
+        }),
+      });
+      go(panel);
+    } catch (error) {
+      setSnackbar(<Snackbar
+          layout='vertical'
+          onClose={() => setSnackbar(null)}
+          before={<Avatar size={24} style={{backgroundColor: 'var(--dynamic_red)'}}><Icon24Error fill='#fff' width={14}
+                                                                                                 height={14}/></Avatar>}
+          duration={900}
+        >
+          Проблема с отправкой данных в Storage
+        </Snackbar>
+      );
+    }
   };
 
   const modalBack = () => {
     setActiveModal(null);
   };
-
-  useEffect(() => {
-    if (settings) {
-      setStorage(settings);
-    }
-
-  }, [settings])
-
 
   useEffect(() => {
     bridge.subscribe(({detail: {type, data}}) => {
@@ -73,18 +82,21 @@ const App = () => {
         document.body.attributes.setNamedItem(schemeAttribute);
       }
     });
-    setPopout(null);
 
     async function fetchData() {
-      const sheetState = await bridge.send('VKWebAppStorageGet', {keys: ['settings']});
+      const user = await bridge.send('VKWebAppGetUserInfo');
+      const sheetState = await bridge.send('VKWebAppStorageGet', {keys: [STORAGE_KEYS.STATUS]});
       if (Array.isArray(sheetState.keys)) {
         const data = {};
         sheetState.keys.forEach(({key, value}) => {
           try {
             data[key] = value ? JSON.parse(value) : {};
             switch (key) {
-              case 'settings':
-                setSettings(data[key]);
+              case STORAGE_KEYS.STATUS:
+                if (data[key] && data[key].hasSeenIntro) {
+                  setActivePanel(ROUTES.HOME);
+                  setUserHasSeenIntro(true);
+                }
                 break;
               default:
                 break;
@@ -101,11 +113,14 @@ const App = () => {
                 Проблема с получением данных из Storage
               </Snackbar>
             );
+            setFetchedState({});
           }
         });
+
       } else {
-        setSettings({volume: true, flash: true});
+        setFetchedState({});
       }
+      setUser(user);
       setPopout(null);
     }
 
@@ -121,36 +136,6 @@ const App = () => {
       isBack={false}
       activeModal={activeModal}
       onClose={() => setActiveModal(null)}>
-      <ModalPage
-        id={MODALS.SETTINGS}
-        onClose={modalBack}
-        header={
-          <ModalPageHeader
-            right={(
-              <>
-                {platform === ANDROID && <PanelHeaderButton onClick={modalBack}><Icon24Done/></PanelHeaderButton>}
-                {platform === IOS && <PanelHeaderButton onClick={modalBack}>Готово</PanelHeaderButton>}
-              </>
-            )}
-          >
-            Настройки
-          </ModalPageHeader>}>
-        <FormLayout>
-          <FormLayoutGroup>
-            <Cell before={<Icon24Flash/>}
-                  asideContent={<Switch onChange={() => setSettings({...settings, flash: !settings.flash})}
-                                        checked={settings ? settings.flash : true}/>}>
-              Свет
-            </Cell>
-            <Cell before={<Icon24Volume/>}
-                  asideContent={<Switch
-                    onChange={() => setSettings({...settings, volume: !settings.volume})}
-                    checked={settings ? settings.volume : true}/>}>
-              Звук
-            </Cell>
-          </FormLayoutGroup>
-        </FormLayout>
-      </ModalPage>
       <ModalCard
         id={MODALS.SEND_ON_WALL}
         onClose={() => setActiveModal(null)}
@@ -185,6 +170,12 @@ const App = () => {
   );
   return (
     <View activePanel={activePanel} popout={popout} modal={modal}>
+      <Intro
+        id={ROUTES.INTRO}
+        fetchedUser={fetchedUser}
+        go={viewIntro}
+        route={ROUTES.HOME}
+        userHasSeenIntro={userHasSeenIntro}/>
       <Home
         id='home'
         textInput={textInput}
@@ -192,16 +183,14 @@ const App = () => {
         setActiveModal={setActiveModal}
         go={go}
         route={ROUTES.FRIENDS}
-        volume={settings ? settings.volume : false}
-        flash={settings ? settings.flash : false}
       />
-      <Friends
-        id='friends'
-        textInput={textInput}
-        go={go}
-        route={ROUTES.HOME}
-        setActiveModal={setActiveModal}
-      />
+      {/*<Friends*/}
+      {/*id='friends'*/}
+      {/*textInput={textInput}*/}
+      {/*go={go}*/}
+      {/*route={ROUTES.HOME}*/}
+      {/*setActiveModal={setActiveModal}*/}
+      {/*/>*/}
     </View>
   );
 };
