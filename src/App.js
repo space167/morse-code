@@ -17,17 +17,17 @@ import {morseToStr, strToMorse} from "./utils/functions";
 import TableSymbols from "./panels/TableSymbols/TableSymbols";
 import ActionSheetItem from "@vkontakte/vkui/dist/components/ActionSheetItem/ActionSheetItem";
 import ActionSheet from "@vkontakte/vkui/dist/components/ActionSheet/ActionSheet";
-
-import Icon28Messages from '@vkontakte/icons/dist/28/messages';
-import Icon28HistoryForwardOutline from '@vkontakte/icons/dist/28/history_forward_outline';
-import Icon28Newsfeed from '@vkontakte/icons/dist/28/newsfeed';
+import OnWallSelf from "./panels/Friends/OnWallSelf/OnWallSelf";
+// import OnPrivate from "./panels/Friends/OnPrivate/OnPrivate";
+import OnWall from "./panels/Friends/OnWall/OnWall";
 
 const ROUTES = {
   INTRO: 'intro',
   HOME: 'home',
-  SEND: 'send',
   TABLE_SYMBOLS: 'table_symbols',
-  FRIENDS: 'friends'
+  ON_WALL: 'on_wall',
+  ON_PRIVATE: 'on_private',
+  ON_WALL_SELF: 'on_wall_self'
 };
 
 const MODALS = {
@@ -152,19 +152,19 @@ const App = () => {
   const openSendMenu = () => {
     setPopout(
       <ActionSheet onClose={() => setPopout(null)}>
-        <ActionSheetItem autoclose before={<Icon28Messages/>}>
-          В личные сообщения
+        {/*<ActionSheetItem autoclose onClick={() => go(ROUTES.ON_PRIVATE)}>*/}
+          {/*В личные сообщения*/}
+        {/*</ActionSheetItem>*/}
+        <ActionSheetItem autoclose onClick={() => go(ROUTES.ON_WALL)}>
+          На стену другу
         </ActionSheetItem>
-        <ActionSheetItem autoclose before={<Icon28Newsfeed/>}>
-          На стену
-        </ActionSheetItem>
-        <ActionSheetItem autoclose before={<Icon28HistoryForwardOutline/>}>
-          В историю
+        <ActionSheetItem autoclose onClick={() => go(ROUTES.ON_WALL_SELF)}>
+          На стену себе
         </ActionSheetItem>
         {platform === IOS && <ActionSheetItem autoclose mode="cancel">Отменить</ActionSheetItem>}
       </ActionSheet>
     )
-  }
+  };
 
 
   const modal = (
@@ -191,7 +191,7 @@ const App = () => {
         id={MODALS.ERROR_ON_WALL}
         onClose={() => setActiveModal(null)}
         icon={<Icon56DoNotDisturbOutline/>}
-        header="Сообщение не доставлено по неизвестным причинам"
+        header="Сообщение не доставлено"
         actions={[{
           title: 'Жаль',
           mode: 'primary',
@@ -230,12 +230,30 @@ const App = () => {
         route={ROUTES.HOME}
         go={go}
       />
-      {/*<Friends*/}
-      {/*id='friends'*/}
-      {/*textInput={textInput}*/}
-      {/*go={go}*/}
-      {/*route={ROUTES.HOME}*/}
-      {/*setActiveModal={setActiveModal}*/}
+      <OnWall
+        id={ROUTES.ON_WALL}
+        route={ROUTES.HOME}
+        morseCode={morseCode}
+        textInput={textInput}
+        setActiveModal={setActiveModal}
+        go={go}
+      />
+      <OnWallSelf
+        id={ROUTES.ON_WALL_SELF}
+        route={ROUTES.HOME}
+        fetchedUser={fetchedUser}
+        morseCode={morseCode}
+        textInput={textInput}
+        setActiveModal={setActiveModal}
+        go={go}
+      />
+      {/*<OnPrivate*/}
+        {/*id={ROUTES.ON_PRIVATE}*/}
+        {/*route={ROUTES.HOME}*/}
+        {/*morseCode={morseCode}*/}
+        {/*textInput={textInput}*/}
+        {/*setActiveModal={setActiveModal}*/}
+        {/*go={go}*/}
       {/*/>*/}
     </View>
   );

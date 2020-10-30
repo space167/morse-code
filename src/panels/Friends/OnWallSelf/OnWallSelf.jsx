@@ -1,31 +1,34 @@
-import React, {useState, useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import Panel from "@vkontakte/vkui/dist/components/Panel/Panel";
-import PanelHeader from "@vkontakte/vkui/dist/components/PanelHeader/PanelHeader";
-import SimpleCell from "@vkontakte/vkui/dist/components/SimpleCell/SimpleCell";
-import InfoRow from "@vkontakte/vkui/dist/components/InfoRow/InfoRow";
-import Group from "@vkontakte/vkui/dist/components/Group/Group";
-import bridge from "@vkontakte/vk-bridge";
 import PanelHeaderBack from "@vkontakte/vkui/dist/components/PanelHeaderBack/PanelHeaderBack";
+import PanelHeader from "@vkontakte/vkui/dist/components/PanelHeader/PanelHeader";
+import bridge from "@vkontakte/vk-bridge";
+import SimpleCell from "@vkontakte/vkui/dist/components/SimpleCell/SimpleCell";
 import Placeholder from "@vkontakte/vkui/dist/components/Placeholder/Placeholder";
 import Avatar from "@vkontakte/vkui/dist/components/Avatar/Avatar";
 import Button from "@vkontakte/vkui/dist/components/Button/Button";
+import InfoRow from "@vkontakte/vkui/dist/components/InfoRow/InfoRow";
+import Group from "@vkontakte/vkui/dist/components/Group/Group";
 
-const OnWall = (
+const OnWallSelf = (
   {
     id,
     go,
     route,
     morseCode,
     textInput,
+    fetchedUser,
     setActiveModal
   }) => {
-  const [friend, setFriend] = useState(null);
+
+  const [accessSend, setAccessSend] = useState(false);
 
   useEffect(() => {
     async function getToken() {
       await bridge.send("VKWebAppGetAuthToken", {"app_id": 7629002, "scope": "friends,wall"})
         .then(data => {
-          getFriend();
+          // sendOnWall();
+          setAccessSend(true)
         })
         .catch(error => {
           go(route)
@@ -35,20 +38,10 @@ const OnWall = (
     getToken();
   }, []);
 
-  async function getFriend() {
-    await bridge.send("VKWebAppGetFriends", {})
-      .then(data => {
-        setFriend(data.users[0]);
-      })
-      .catch(error => {
-        go(route);
-      });
-  }
-
   async function sendOnWall() {
     await bridge.send("VKWebAppShowWallPostBox", {
-      "owner_id": friend.id,
-      "message": `Лови шифровку! «${morseCode}» Значение узнаешь ниже`,
+      "owner_id": fetchedUser.id,
+      "message": `«${morseCode}» Значение ниже`,
       "attachment": "https://vk.com/app7629002",
     }).then(data => {
       setActiveModal('send_on_wall');
@@ -66,12 +59,12 @@ const OnWall = (
           {textInput}
         </InfoRow>
       </SimpleCell>
-      {friend && <Placeholder
-        icon={<Avatar size={80} src={friend.photo_200}/>}
+      {(accessSend && fetchedUser) && <Placeholder
+        icon={<Avatar size={80} src={fetchedUser.photo_200}/>}
         header="Получатель"
         action={<Button onClick={sendOnWall} size="l">Отправить на стену</Button>}
       >
-        {friend.first_name} {friend.last_name}
+        {fetchedUser.first_name} {fetchedUser.last_name}
         <Group>
           <SimpleCell multiline>
             <InfoRow header="Сообщение">
@@ -84,4 +77,4 @@ const OnWall = (
   );
 };
 
-export default OnWall;
+export default OnWallSelf;
