@@ -1,5 +1,5 @@
 import React from 'react';
-import SYMBOLS from '../../config/morse';
+import SYMBOLS from '../../config/morse2';
 import Panel from "@vkontakte/vkui/dist/components/Panel/Panel";
 import PanelHeader from "@vkontakte/vkui/dist/components/PanelHeader/PanelHeader";
 import Div from "@vkontakte/vkui/dist/components/Div/Div";
