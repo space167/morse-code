@@ -1,7 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import bridge from '@vkontakte/vk-bridge';
 import View from '@vkontakte/vkui/dist/components/View/View';
-import ScreenSpinner from '@vkontakte/vkui/dist/components/ScreenSpinner/ScreenSpinner';
 import '@vkontakte/vkui/dist/vkui.css';
 import Home from './panels/Home/Home';
 import ModalRoot from "@vkontakte/vkui/dist/components/ModalRoot/ModalRoot";
@@ -71,7 +70,7 @@ const App = () => {
 
   const [hash, setHash] = useState(window && window.location.hash ? window.location.hash : null);
 
-  const [settings, setSettings] = useState()
+  const [settings, setSettings] = useState(null);
 
   const [snackbar, setSnackbar] = useState(null);
   const [userHasSeenIntro, setUserHasSeenIntro] = useState(false);
@@ -196,7 +195,9 @@ const App = () => {
             setFetchedState({});
           }
         });
-
+        if (!settings) {
+          setSettings({volume: true, flash: true})
+        }
       } else {
         setFetchedState({});
       }

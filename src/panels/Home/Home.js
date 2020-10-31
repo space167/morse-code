@@ -6,9 +6,6 @@ import Input from "@vkontakte/vkui/dist/components/Input/Input";
 import Button from "@vkontakte/vkui/dist/components/Button/Button";
 import FormLayout from "@vkontakte/vkui/dist/components/FormLayout/FormLayout";
 import Icon24Send from '@vkontakte/icons/dist/24/send';
-import PanelHeaderButton from "@vkontakte/vkui/dist/components/PanelHeaderButton/PanelHeaderButton";
-import Icon28SubtitlesOutline from '@vkontakte/icons/dist/28/subtitles_outline';
-
 import Tooltip from "@vkontakte/vkui/dist/components/Tooltip/Tooltip";
 import Card from "@vkontakte/vkui/dist/components/Card/Card";
 import Div from "@vkontakte/vkui/dist/components/Div/Div";
