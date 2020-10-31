@@ -31,11 +31,17 @@ export function morseToStr(morse) {
   return arrSymbols.join(' ');
 }
 
+export function processHash(str) {
+  if (str.indexOf('#') !== -1) {
+    return str.split('#')[1];
+  } else {
+    return null;
+  }
+}
+
 export function hashToMorse(hash) {
-  let arr = hash.split('#');
-  let newHash = arr.join('');
-  arr = newHash.split('d');
-  newHash = arr.join('-');
+  let arr = hash.split('d');
+  let newHash = arr.join('-');
   arr = newHash.split('p');
   newHash = arr.join('*');
   arr = newHash.split('s');
@@ -54,4 +60,17 @@ export function morseToHash(morse) {
   newMorse = arr.join('s');
   newMorse = '#' + newMorse;
   return newMorse;
+}
+
+export function iOS() {
+  return [
+      'iPad Simulator',
+      'iPhone Simulator',
+      'iPod Simulator',
+      'iPad',
+      'iPhone',
+      'iPod'
+    ].includes(navigator.platform)
+    // iPad on iOS 13 detection
+    || (navigator.userAgent.includes("Mac") && "ontouchend" in document)
 }

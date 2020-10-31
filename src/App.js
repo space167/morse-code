@@ -12,7 +12,7 @@ import Snackbar from "@vkontakte/vkui/dist/components/Snackbar/Snackbar";
 import Avatar from "@vkontakte/vkui/dist/components/Avatar/Avatar";
 import Icon24Error from "@vkontakte/icons/dist/24/error";
 import Intro from "./panels/Intro/Intro";
-import {hashToMorse, morseToStr, strToMorse} from "./utils/functions";
+import {hashToMorse, iOS, morseToStr, processHash, strToMorse} from "./utils/functions";
 import TableSymbols from "./panels/TableSymbols/TableSymbols";
 import ActionSheetItem from "@vkontakte/vkui/dist/components/ActionSheetItem/ActionSheetItem";
 import ActionSheet from "@vkontakte/vkui/dist/components/ActionSheet/ActionSheet";
@@ -62,13 +62,21 @@ const TIME_DELAY = 1500;
 let TIMEOUT_CHAR = null;
 let TIMEOUT_DELAY = null;
 
+let hashApp = '';
+
+if (iOS()) {
+  hashApp = window.location.href;
+} else {
+  hashApp = window.location.hash;
+}
+
 const App = () => {
   const [popout, setPopout] = useState(null);
   const [activePanel, setActivePanel] = useState(ROUTES.INTRO);
   const [fetchedUser, setUser] = useState(null);
   const [activeModal, setActiveModal] = useState(null);
 
-  const [hash, setHash] = useState(window && window.location.hash ? window.location.hash : null);
+  const [hash, setHash] = useState(processHash(hashApp));
 
   const [settings, setSettings] = useState(null);
 
