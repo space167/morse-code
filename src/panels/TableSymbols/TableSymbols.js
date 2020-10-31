@@ -12,35 +12,15 @@ import PanelHeaderButton from "@vkontakte/vkui/dist/components/PanelHeaderButton
 import Icon24GearOutline from '@vkontakte/icons/dist/24/gear_outline';
 import Icon28SubtitlesOutline from '@vkontakte/icons/dist/28/subtitles_outline';
 
-let context = new AudioContext();
-let o = null;
-let g = null;
 
-const TableSymbols = ({id, route, go}) => {
-  const [statusSignal, setStatusSignal] = useState(false);
 
-  useEffect(()=>{
-    if (statusSignal) {
-      audioStart();
-    } else {
-      audioStop(0.04);
-    }
-  }, [statusSignal]);
-
-  function audioStart() {
-    o = context.createOscillator();
-    g = context.createGain();
-    o.connect(g);
-    g.connect(context.destination);
-    o.start(0)
-  }
-
-  function audioStop(decreaseTime) {
-    try {
-      g.gain.exponentialRampToValueAtTime(0.00001, context.currentTime + decreaseTime)
-    } catch (e) {
-    }
-  }
+const TableSymbols = (
+  {
+    id,
+    route,
+    setSymbol,
+    go
+  }) => {
 
   let numbers = [];
   let letters = [];
@@ -62,7 +42,7 @@ const TableSymbols = ({id, route, go}) => {
       <Group header={<Header mode="secondary">Цифры</Header>}>
         <Div className={styles['items']}>
           {numbers.map((sym, i) => (
-            <Button mode="secondary" onClick={() => setStatusSignal(!statusSignal)} weight="regular"
+            <Button mode="secondary" onClick={() => setSymbol(sym)} weight="regular"
                     className={styles['item']}
                     key={i}>{sym.value}<br/>{sym.morse}</Button>
           ))}
@@ -71,7 +51,8 @@ const TableSymbols = ({id, route, go}) => {
       <Group header={<Header mode="secondary">Буквы</Header>}>
         <Div className={styles['items']}>
           {letters.map((sym, i) => (
-            <Button mode="secondary" className={styles['item']} key={i}>{sym.value}<br/>{sym.morse}</Button>
+            <Button mode="secondary" className={styles['item']} key={i}
+                    onClick={() => setSymbol(sym)}>{sym.value}<br/>{sym.morse}</Button>
           ))}
         </Div>
       </Group>

@@ -46,13 +46,13 @@ const Home = (
 
   //process input morse code
   const onHandleChangeMorseCode = (e) => {
-    if ((e.target.value.match(/^[-\/*/]+$/)) || (e.target.value === '')) {
+    if ((e.target.value.match(/^[- \/*/]+$/)) || (e.target.value === '')) {
       setMorseInput(e.target.value);
     } else {
       setTooltipMorse(true);
       setTimeout(() => {
         setTooltipMorse(false);
-      }, 3500)
+      }, 3000)
     }
   };
 
@@ -105,7 +105,7 @@ const Home = (
           header={<><Header mode="secondary">Дешифратор</Header></>}
         >
           <Tooltip
-            text="Только симолвы *, -, /"
+            text="Только символы *, -, / и пробелы"
             isShown={tooltipMorse}
             onClose={() => setTooltipMorse(false)}
           >
@@ -113,7 +113,7 @@ const Home = (
               type="text"
               value={morseInput}
               maxLength="500"
-              pattern="^[-\/*/\s]+$"
+              pattern="^[- \/*/\s]+$"
               placeholder="Введите шифр"
               onChange={onHandleChangeMorseCode}
             />

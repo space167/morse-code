@@ -18,8 +18,10 @@ import TableSymbols from "./panels/TableSymbols/TableSymbols";
 import ActionSheetItem from "@vkontakte/vkui/dist/components/ActionSheetItem/ActionSheetItem";
 import ActionSheet from "@vkontakte/vkui/dist/components/ActionSheet/ActionSheet";
 import OnWallSelf from "./panels/Friends/OnWallSelf/OnWallSelf";
-// import OnPrivate from "./panels/Friends/OnPrivate/OnPrivate";
 import OnWall from "./panels/Friends/OnWall/OnWall";
+import Title from "@vkontakte/vkui/dist/components/Typography/Title/Title";
+import Icon28AdvertisingOutline from '@vkontakte/icons/dist/28/advertising_outline';
+import './styles/main.css';
 
 const ROUTES = {
   INTRO: 'intro',
@@ -33,11 +35,23 @@ const ROUTES = {
 const MODALS = {
   SEND_ON_WALL: 'send_on_wall',
   ERROR_ON_WALL: 'error_on_wall',
+  PLAY_SYMBOL: 'play_symbol'
 };
 
 const STORAGE_KEYS = {
   STATUS: 'viewStatus',
 };
+
+let context = new AudioContext();
+let o = null;
+let g = null;
+
+const TIME_POINT = 500;
+const TIME_DASH = 1000;
+const TIME_DELAY = 1500;
+
+let TIMEOUT_CHAR = null;
+let TIMEOUT_DELAY = null;
 
 const App = () => {
   const [popout, setPopout] = useState(null);
@@ -54,6 +68,13 @@ const App = () => {
   //дешифратор
   const [morseInput, setMorseInput] = useState('');
   const [decodeMorse, setDecodeMorse] = useState('');
+
+  //воспроизводимый символ
+  const [symbol, setSymbol] = useState(null);
+  //воспроизводимые точки
+  const [chars, setChars] = useState(null);
+  //текущий точка
+  const [currentChar, setCurrentChar] = useState(0);
 
   const platform = usePlatform();
 
@@ -163,11 +184,100 @@ const App = () => {
     )
   };
 
+
+  const stopPlay = () => {
+    setActiveModal(null);
+    clearTimeout(TIMEOUT_DELAY);
+    clearTimeout(TIMEOUT_CHAR);
+    audioStop();
+    setSymbol(null);
+  };
+
+  useEffect(() => {
+    if (symbol) {
+      setActiveModal(MODALS.PLAY_SYMBOL);
+      setChars(symbol.morse.split(' '))
+    } else {
+      setChars(null);
+    }
+  }, [symbol]);
+
+  useEffect(() => {
+    if (chars) {
+      playChar();
+    } else {
+      setCurrentChar(0);
+    }
+  }, [chars]);
+
+  useEffect(() => {
+    if (chars) {
+      if (currentChar < chars.length) {
+        playChar();
+      } else {
+        stopPlay();
+      }
+    }
+  }, [currentChar]);
+
+  const getTimeDelay = (char) => {
+    if (char === '*') {
+      return TIME_POINT;
+    } else {
+      return TIME_DASH;
+    }
+  };
+
+  const nextChar = () => {
+    setCurrentChar(currentChar + 1)
+  };
+
+  const nextStep = () => {
+    audioStop();
+    TIMEOUT_DELAY = setTimeout(nextChar, TIME_DELAY)
+  };
+
+  function playChar() {
+    if (symbol) {
+      audioStart();
+      TIMEOUT_CHAR = setTimeout(nextStep, getTimeDelay(chars[currentChar]))
+    }
+  };
+
+  function audioStart() {
+    o = context.createOscillator();
+    g = context.createGain();
+    o.connect(g);
+    g.connect(context.destination);
+    o.start(0)
+  }
+
+  function audioStop() {
+    try {
+      g.gain.exponentialRampToValueAtTime(0.00001, context.currentTime + 0.01)
+    } catch (e) {
+    }
+  }
+
   const modal = (
     <ModalRoot
       isBack={false}
       activeModal={activeModal}
       onClose={() => setActiveModal(null)}>
+      <ModalCard
+        id={MODALS.PLAY_SYMBOL}
+        onClose={stopPlay}
+        icon={symbol ? <Title level="1" weight="bold">{symbol.value}</Title> : ''}
+        header={chars && chars.map((char, i) => (
+          <span key={i} className={i === currentChar ? 'blue' : ''}>{char}</span>
+        ))}
+        actions={[{
+          title: 'СТОП',
+          mode: 'primary',
+          action: stopPlay
+        }]}
+      >
+      </ModalCard>
       <ModalCard
         id={MODALS.SEND_ON_WALL}
         onClose={() => setActiveModal(null)}
@@ -224,6 +334,7 @@ const App = () => {
       <TableSymbols
         id={ROUTES.TABLE_SYMBOLS}
         route={ROUTES.HOME}
+        setSymbol={setSymbol}
         go={go}
       />
       <OnWall
