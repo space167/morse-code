@@ -28,7 +28,6 @@ const OnWallSelf = (
     async function getToken() {
       await bridge.send("VKWebAppGetAuthToken", {"app_id": 7629002, "scope": "friends,wall"})
         .then(data => {
-          // sendOnWall();
           setAccessSend(true)
         })
         .catch(error => {

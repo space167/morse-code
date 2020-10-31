@@ -69,7 +69,7 @@ const App = () => {
   const [fetchedUser, setUser] = useState(null);
   const [activeModal, setActiveModal] = useState(null);
 
-  const [hash, setHash] = useState(window.location.hash ? window.location.hash : null);
+  const [hash, setHash] = useState(window && window.location.hash ? window.location.hash : null);
 
   const [settings, setSettings] = useState()
 
@@ -117,7 +117,6 @@ const App = () => {
     if (settings) {
       setStorage(settings);
     }
-
   }, [settings])
 
 
@@ -330,8 +329,9 @@ const App = () => {
         <FormLayout>
           <FormLayoutGroup>
             <Cell before={<Icon24Flash/>}
-                  asideContent={<Switch onChange={() => setSettings({...settings, flash: !settings.flash})}
-                                        checked={settings ? settings.flash : true}/>}>
+                  asideContent={<Switch
+                    onChange={() => setSettings({...settings, flash: !settings.flash})}
+                    checked={settings ? settings.flash : true}/>}>
               Свет
             </Cell>
             <Cell before={<Icon24Volume/>}

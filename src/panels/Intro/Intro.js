@@ -16,10 +16,10 @@ const Intro = ({id, go, routes, hash, fetchedUser, userHasSeenIntro}) => (
     <Fragment>
       <Group>
         <Div className='User'>
-          {fetchedUser.photo_200 ? <Avatar size={125} src={fetchedUser.photo_200}/> : null}
+          {fetchedUser.photo_200 ? <Avatar size={100} src={fetchedUser.photo_200}/> : null}
           <h2>Привет, {fetchedUser.first_name}</h2>
           <h3>Этот сервис поможет обмениваться сообщениями, зашифрованными азбукой Морзе</h3>
-          <h4>Внимание! В приложении по-умолчанию включены звук и фонарик</h4>
+          <h4>Внимание! В приложении по умолчанию включены звук и фонарик</h4>
         </Div>
       </Group>
       <FixedLayout vertical='bottom'>
