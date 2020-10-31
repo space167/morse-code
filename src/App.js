@@ -112,7 +112,7 @@ const App = () => {
             switch (key) {
               case STORAGE_KEYS.STATUS:
                 if (data[key] && data[key].hasSeenIntro) {
-                  setActivePanel(ROUTES.HOME);
+                  setActivePanel(ROUTES.TABLE_SYMBOLS);
                   setUserHasSeenIntro(true);
                 }
                 break;
@@ -152,9 +152,6 @@ const App = () => {
   const openSendMenu = () => {
     setPopout(
       <ActionSheet onClose={() => setPopout(null)}>
-        {/*<ActionSheetItem autoclose onClick={() => go(ROUTES.ON_PRIVATE)}>*/}
-          {/*В личные сообщения*/}
-        {/*</ActionSheetItem>*/}
         <ActionSheetItem autoclose onClick={() => go(ROUTES.ON_WALL)}>
           На стену другу
         </ActionSheetItem>
@@ -165,7 +162,6 @@ const App = () => {
       </ActionSheet>
     )
   };
-
 
   const modal = (
     <ModalRoot
@@ -247,14 +243,6 @@ const App = () => {
         setActiveModal={setActiveModal}
         go={go}
       />
-      {/*<OnPrivate*/}
-        {/*id={ROUTES.ON_PRIVATE}*/}
-        {/*route={ROUTES.HOME}*/}
-        {/*morseCode={morseCode}*/}
-        {/*textInput={textInput}*/}
-        {/*setActiveModal={setActiveModal}*/}
-        {/*go={go}*/}
-      {/*/>*/}
     </View>
   );
 };

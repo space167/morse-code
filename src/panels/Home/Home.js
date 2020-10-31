@@ -13,6 +13,7 @@ import Tooltip from "@vkontakte/vkui/dist/components/Tooltip/Tooltip";
 import Card from "@vkontakte/vkui/dist/components/Card/Card";
 import Div from "@vkontakte/vkui/dist/components/Div/Div";
 import Header from "@vkontakte/vkui/dist/components/Header/Header";
+import PanelHeaderBack from "@vkontakte/vkui/dist/components/PanelHeaderBack/PanelHeaderBack";
 
 const Home = (
   {
@@ -65,9 +66,9 @@ const Home = (
   return (
     <Panel id={id}>
       <PanelHeader
-        left={<PanelHeaderButton onClick={() => go(routes.TABLE_SYMBOLS)}><Icon28SubtitlesOutline/></PanelHeaderButton>}
+        left={<PanelHeaderBack onClick={() => go(routes.TABLE_SYMBOLS)}/>}
       >
-        Морзянка
+        Шифратор
       </PanelHeader>
       <FormLayout>
         <Group header={<Header mode="secondary">Шифратор</Header>}>
