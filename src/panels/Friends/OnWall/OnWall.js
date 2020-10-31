@@ -9,6 +9,7 @@ import PanelHeaderBack from "@vkontakte/vkui/dist/components/PanelHeaderBack/Pan
 import Placeholder from "@vkontakte/vkui/dist/components/Placeholder/Placeholder";
 import Avatar from "@vkontakte/vkui/dist/components/Avatar/Avatar";
 import Button from "@vkontakte/vkui/dist/components/Button/Button";
+import {morseToHash} from "../../../utils/functions";
 
 const OnWall = (
   {
@@ -49,7 +50,7 @@ const OnWall = (
     await bridge.send("VKWebAppShowWallPostBox", {
       "owner_id": friend.id,
       "message": `Лови шифровку! «${morseCode}» Значение узнаешь ниже`,
-      "attachment": "https://vk.com/app7629002",
+      "attachment": "https://vk.com/app7629002" + morseToHash(morseCode),
     }).then(data => {
       setActiveModal('send_on_wall');
     })

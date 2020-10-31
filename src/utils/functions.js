@@ -30,3 +30,28 @@ export function morseToStr(morse) {
   }
   return arrSymbols.join(' ');
 }
+
+export function hashToMorse(hash) {
+  let arr = hash.split('#');
+  let newHash = arr.join('');
+  arr = newHash.split('d');
+  newHash = arr.join('-');
+  arr = newHash.split('p');
+  newHash = arr.join('*');
+  arr = newHash.split('s');
+  newHash = arr.join('/');
+  return newHash;
+}
+
+export function morseToHash(morse) {
+  let arr = morse.split(' ');
+  let newMorse = arr.join('');
+  arr = newMorse.split('-');
+  newMorse = arr.join('d');
+  arr = newMorse.split('*');
+  newMorse = arr.join('p');
+  arr = newMorse.split('/');
+  newMorse = arr.join('s');
+  newMorse = '#' + newMorse;
+  return newMorse;
+}

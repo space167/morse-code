@@ -13,7 +13,7 @@ import Snackbar from "@vkontakte/vkui/dist/components/Snackbar/Snackbar";
 import Avatar from "@vkontakte/vkui/dist/components/Avatar/Avatar";
 import Icon24Error from "@vkontakte/icons/dist/24/error";
 import Intro from "./panels/Intro/Intro";
-import {morseToStr, strToMorse} from "./utils/functions";
+import {hashToMorse, morseToStr, strToMorse} from "./utils/functions";
 import TableSymbols from "./panels/TableSymbols/TableSymbols";
 import ActionSheetItem from "@vkontakte/vkui/dist/components/ActionSheetItem/ActionSheetItem";
 import ActionSheet from "@vkontakte/vkui/dist/components/ActionSheet/ActionSheet";
@@ -69,6 +69,8 @@ const App = () => {
   const [fetchedUser, setUser] = useState(null);
   const [activeModal, setActiveModal] = useState(null);
 
+  const [hash, setHash] = useState(window.location.hash ? window.location.hash : null);
+
   const [settings, setSettings] = useState()
 
   const [snackbar, setSnackbar] = useState(null);
@@ -89,6 +91,12 @@ const App = () => {
   const [currentChar, setCurrentChar] = useState(0);
 
   const platform = usePlatform();
+
+  useEffect(() => {
+    if (hash) {
+      setMorseInput(hashToMorse(hash));
+    }
+  }, [hash]);
 
   useEffect(() => {
     setMorseCode(strToMorse(textInput));
@@ -160,7 +168,11 @@ const App = () => {
             switch (key) {
               case STORAGE_KEYS.STATUS:
                 if (data[key] && data[key].hasSeenIntro) {
-                  setActivePanel(ROUTES.TABLE_SYMBOLS);
+                  if (hash) {
+                    setActivePanel(ROUTES.HOME);
+                  } else {
+                    setActivePanel(ROUTES.TABLE_SYMBOLS);
+                  }
                   setUserHasSeenIntro(true);
                 }
                 break;
@@ -383,7 +395,8 @@ const App = () => {
         id={ROUTES.INTRO}
         fetchedUser={fetchedUser}
         go={viewIntro}
-        route={ROUTES.HOME}
+        routes={ROUTES}
+        hash={hash}
         userHasSeenIntro={userHasSeenIntro}/>
       <Home
         id={ROUTES.HOME}

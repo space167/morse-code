@@ -9,6 +9,7 @@ import Avatar from "@vkontakte/vkui/dist/components/Avatar/Avatar";
 import Button from "@vkontakte/vkui/dist/components/Button/Button";
 import InfoRow from "@vkontakte/vkui/dist/components/InfoRow/InfoRow";
 import Group from "@vkontakte/vkui/dist/components/Group/Group";
+import {morseToHash} from "../../../utils/functions";
 
 const OnWallSelf = (
   {
@@ -42,7 +43,7 @@ const OnWallSelf = (
     await bridge.send("VKWebAppShowWallPostBox", {
       "owner_id": fetchedUser.id,
       "message": `«${morseCode}» Значение ниже`,
-      "attachment": "https://vk.com/app7629002",
+      "attachment": "https://vk.com/app7629002" + morseToHash(morseCode),
     }).then(data => {
       setActiveModal('send_on_wall');
     })
