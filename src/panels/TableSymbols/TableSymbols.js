@@ -1,8 +1,7 @@
-import React, {useState, useEffect} from 'react';
+import React from 'react';
 import SYMBOLS from '../../config/morse';
 import Panel from "@vkontakte/vkui/dist/components/Panel/Panel";
 import PanelHeader from "@vkontakte/vkui/dist/components/PanelHeader/PanelHeader";
-import PanelHeaderBack from "@vkontakte/vkui/dist/components/PanelHeaderBack/PanelHeaderBack";
 import Div from "@vkontakte/vkui/dist/components/Div/Div";
 import styles from "./TableSymbols.module.css"
 import Group from "@vkontakte/vkui/dist/components/Group/Group";
@@ -12,12 +11,12 @@ import PanelHeaderButton from "@vkontakte/vkui/dist/components/PanelHeaderButton
 import Icon24GearOutline from '@vkontakte/icons/dist/24/gear_outline';
 import Icon28SubtitlesOutline from '@vkontakte/icons/dist/28/subtitles_outline';
 
-
-
 const TableSymbols = (
   {
     id,
     route,
+    modalPage,
+    setActiveModal,
     setSymbol,
     go
   }) => {
@@ -35,7 +34,7 @@ const TableSymbols = (
   return (
     <Panel id={id}>
       <PanelHeader
-        left={<PanelHeaderButton><Icon24GearOutline/></PanelHeaderButton>}>
+        left={<PanelHeaderButton onClick={()=>setActiveModal(modalPage)}><Icon24GearOutline/></PanelHeaderButton>}>
         Морзянка
       </PanelHeader>
       <Div><Button size="xl" onClick={() => go(route)} after={<Icon28SubtitlesOutline/>}>Шифратор</Button></Div>

@@ -20,8 +20,16 @@ import ActionSheet from "@vkontakte/vkui/dist/components/ActionSheet/ActionSheet
 import OnWallSelf from "./panels/Friends/OnWallSelf/OnWallSelf";
 import OnWall from "./panels/Friends/OnWall/OnWall";
 import Title from "@vkontakte/vkui/dist/components/Typography/Title/Title";
-import Icon28AdvertisingOutline from '@vkontakte/icons/dist/28/advertising_outline';
 import './styles/main.css';
+import ModalPage from "@vkontakte/vkui/dist/components/ModalPage/ModalPage";
+import PanelHeaderButton from "@vkontakte/vkui/dist/components/PanelHeaderButton/PanelHeaderButton";
+import Icon24Done from "@vkontakte/icons/dist/24/done";
+import FormLayout from "@vkontakte/vkui/dist/components/FormLayout/FormLayout";
+import FormLayoutGroup from "@vkontakte/vkui/dist/components/FormLayoutGroup/FormLayoutGroup";
+import Cell from "@vkontakte/vkui/dist/components/Cell/Cell";
+import Icon24Flash from "@vkontakte/icons/dist/24/flash";
+import Switch from "@vkontakte/vkui/dist/components/Switch/Switch";
+import Icon24Volume from "@vkontakte/icons/dist/24/volume";
 
 const ROUTES = {
   INTRO: 'intro',
@@ -35,11 +43,13 @@ const ROUTES = {
 const MODALS = {
   SEND_ON_WALL: 'send_on_wall',
   ERROR_ON_WALL: 'error_on_wall',
-  PLAY_SYMBOL: 'play_symbol'
+  PLAY_SYMBOL: 'play_symbol',
+  SETTINGS: 'settings'
 };
 
 const STORAGE_KEYS = {
   STATUS: 'viewStatus',
+  SETTINGS: 'settings'
 };
 
 let context = new AudioContext();
@@ -58,6 +68,8 @@ const App = () => {
   const [activePanel, setActivePanel] = useState(ROUTES.INTRO);
   const [fetchedUser, setUser] = useState(null);
   const [activeModal, setActiveModal] = useState(null);
+
+  const [settings, setSettings] = useState()
 
   const [snackbar, setSnackbar] = useState(null);
   const [userHasSeenIntro, setUserHasSeenIntro] = useState(false);
@@ -85,6 +97,21 @@ const App = () => {
   useEffect(() => {
     setDecodeMorse(morseToStr(morseInput));
   }, [morseInput]);
+
+  const setStorage = async function (props) {
+    await bridge.send('VKWebAppStorageSet', {
+      key: STORAGE_KEYS.SETTINGS,
+      value: JSON.stringify(props)
+    });
+  };
+
+  useEffect(() => {
+    if (settings) {
+      setStorage(settings);
+    }
+
+  }, [settings])
+
 
   const viewIntro = async (panel) => {
     try {
@@ -124,7 +151,7 @@ const App = () => {
 
     async function fetchData() {
       const user = await bridge.send('VKWebAppGetUserInfo');
-      const sheetState = await bridge.send('VKWebAppStorageGet', {keys: [STORAGE_KEYS.STATUS]});
+      const sheetState = await bridge.send('VKWebAppStorageGet', {keys: [STORAGE_KEYS.STATUS, STORAGE_KEYS.SETTINGS]});
       if (Array.isArray(sheetState.keys)) {
         const data = {};
         sheetState.keys.forEach(({key, value}) => {
@@ -136,6 +163,9 @@ const App = () => {
                   setActivePanel(ROUTES.TABLE_SYMBOLS);
                   setUserHasSeenIntro(true);
                 }
+                break;
+              case STORAGE_KEYS.SETTINGS:
+                setSettings(data[key]);
                 break;
               default:
                 break;
@@ -242,17 +272,24 @@ const App = () => {
       audioStart();
       TIMEOUT_CHAR = setTimeout(nextStep, getTimeDelay(chars[currentChar]))
     }
-  };
+  }
 
   function audioStart() {
-    o = context.createOscillator();
-    g = context.createGain();
-    o.connect(g);
-    g.connect(context.destination);
-    o.start(0)
+    if (settings.flash) {
+      bridge.send("VKWebAppFlashSetLevel", {"level": 1});
+    }
+
+    if (settings.volume) {
+      o = context.createOscillator();
+      g = context.createGain();
+      o.connect(g);
+      g.connect(context.destination);
+      o.start(0)
+    }
   }
 
   function audioStop() {
+    bridge.send("VKWebAppFlashSetLevel", {"level": 0});
     try {
       g.gain.exponentialRampToValueAtTime(0.00001, context.currentTime + 0.01)
     } catch (e) {
@@ -264,6 +301,36 @@ const App = () => {
       isBack={false}
       activeModal={activeModal}
       onClose={() => setActiveModal(null)}>
+      <ModalPage
+        id={MODALS.SETTINGS}
+        onClose={modalBack}
+        header={
+          <ModalPageHeader
+            right={(
+              <>
+                {platform === ANDROID && <PanelHeaderButton onClick={modalBack}><Icon24Done/></PanelHeaderButton>}
+                {platform === IOS && <PanelHeaderButton onClick={modalBack}>Готово</PanelHeaderButton>}
+              </>
+            )}
+          >
+            Настройки
+          </ModalPageHeader>}>
+        <FormLayout>
+          <FormLayoutGroup>
+            <Cell before={<Icon24Flash/>}
+                  asideContent={<Switch onChange={() => setSettings({...settings, flash: !settings.flash})}
+                                        checked={settings ? settings.flash : true}/>}>
+              Свет
+            </Cell>
+            <Cell before={<Icon24Volume/>}
+                  asideContent={<Switch
+                    onChange={() => setSettings({...settings, volume: !settings.volume})}
+                    checked={settings ? settings.volume : true}/>}>
+              Звук
+            </Cell>
+          </FormLayoutGroup>
+        </FormLayout>
+      </ModalPage>
       <ModalCard
         id={MODALS.PLAY_SYMBOL}
         onClose={stopPlay}
@@ -335,6 +402,8 @@ const App = () => {
         id={ROUTES.TABLE_SYMBOLS}
         route={ROUTES.HOME}
         setSymbol={setSymbol}
+        modalPage={MODALS.SETTINGS}
+        setActiveModal={setActiveModal}
         go={go}
       />
       <OnWall
