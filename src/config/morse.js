@@ -68,6 +68,10 @@ const SYMBOLS = [
     morse: "*"
   },
   {
+    value: 'Ë',
+    morse: "*"
+  },
+  {
     value: 'Ж',
     morse: "* * * -"
   },

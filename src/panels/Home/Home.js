@@ -34,7 +34,7 @@ const Home = (
 
   //process input
   const onHandleChangeInput = (e) => {
-    if ((e.target.value.match(/^[0-9А-Яа-яЁё\s]+$/)) || (e.target.value === '')) {
+    if ((e.target.value.match(/^[0-9А-Яа-яЁёËë\s]+$/)) || (e.target.value === '')) {
       setTextInput(e.target.value);
     } else {
       setTooltip(true);
@@ -81,7 +81,7 @@ const Home = (
               type="text"
               value={textInput}
               maxLength="40"
-              pattern="^[0-9А-Яа-яЁё\s]+$"
+              pattern="^[0-9А-Яа-яЁёËë\s]+$"
               placeholder="Введите сообщение"
               onChange={onHandleChangeInput}
             />
