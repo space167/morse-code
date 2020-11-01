@@ -41,8 +41,8 @@ const OnWallSelf = (
   async function sendOnWall() {
     await bridge.send("VKWebAppShowWallPostBox", {
       "owner_id": fetchedUser.id,
-      "message": `«${morseCode}» Значение ниже`,
-      "attachment": "https://vk.com/app7629002" + morseToHash(morseCode),
+      "message": `«${morseCode}» Значение по ссылке https://vk.com/app7629002${morseToHash(morseCode)}`,
+      "attachment": `https://vk.com/app7629002${morseToHash(morseCode)}`,
     }).then(data => {
       setActiveModal('send_on_wall');
     })
