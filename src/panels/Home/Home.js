@@ -12,6 +12,9 @@ import Div from "@vkontakte/vkui/dist/components/Div/Div";
 import Header from "@vkontakte/vkui/dist/components/Header/Header";
 import PanelHeaderBack from "@vkontakte/vkui/dist/components/PanelHeaderBack/PanelHeaderBack";
 
+const MAX_LENGTH_STR = 40;
+const MAX_LENGTH_MORSE = 500;
+
 const Home = (
   {
     id,
@@ -31,8 +34,10 @@ const Home = (
 
   //process input
   const onHandleChangeInput = (e) => {
-    if ((e.target.value.match(/^[0-9А-Яа-яЁёËë\s]+$/)) || (e.target.value === '')) {
-      setTextInput(e.target.value);
+    if ((e.target.value.match(/^[0-9А-Яа-яЁёËë \s]+$/)) || (e.target.value === '')) {
+      if (e.target.value.length <= MAX_LENGTH_STR) {
+        setTextInput(e.target.value);
+      }
     } else {
       setTooltip(true);
       setTimeout(() => {
@@ -44,7 +49,9 @@ const Home = (
   //process input morse code
   const onHandleChangeMorseCode = (e) => {
     if ((e.target.value.match(/^[- \/*/]+$/)) || (e.target.value === '')) {
-      setMorseInput(e.target.value);
+      if (e.target.value.length <= MAX_LENGTH_MORSE) {
+        setMorseInput(e.target.value);
+      }
     } else {
       setTooltipMorse(true);
       setTimeout(() => {
@@ -77,8 +84,8 @@ const Home = (
             <Input
               type="text"
               value={textInput}
-              maxLength="40"
-              pattern="^[0-9А-Яа-яЁёËë\s]+$"
+              maxLength={MAX_LENGTH_STR}
+              pattern="^[0-9А-Яа-яЁёËë \s]+$"
               placeholder="Введите сообщение"
               onChange={onHandleChangeInput}
             />
@@ -109,7 +116,7 @@ const Home = (
             <Input
               type="text"
               value={morseInput}
-              maxLength="500"
+              maxLength={MAX_LENGTH_MORSE}
               pattern="^[- \/*/\s]+$"
               placeholder="Введите шифр"
               onChange={onHandleChangeMorseCode}
