@@ -51,6 +51,7 @@ const STORAGE_KEYS = {
   SETTINGS: 'settings'
 };
 
+let AudioContext = window.AudioContext || window.webkitAudioContext;
 let context = new AudioContext();
 let o = null;
 let g = null;
@@ -156,6 +157,10 @@ const App = () => {
 
   useEffect(() => {
     bridge.subscribe(({detail: {type, data}}) => {
+      if (type === 'VKWebAppViewHide') {
+        bridge.send("VKWebAppFlashSetLevel", {"level": 0});
+        stopPlay();
+      }
       if (type === 'VKWebAppUpdateConfig') {
         const schemeAttribute = document.createAttribute('scheme');
         schemeAttribute.value = data.scheme ? data.scheme : 'client_light';
@@ -235,13 +240,13 @@ const App = () => {
   };
 
 
-  const stopPlay = () => {
+  function stopPlay() {
     setActiveModal(null);
     clearTimeout(TIMEOUT_DELAY);
     clearTimeout(TIMEOUT_CHAR);
     audioStop();
     setSymbol(null);
-  };
+  }
 
   useEffect(() => {
     if (symbol) {
