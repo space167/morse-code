@@ -373,7 +373,10 @@ const App = () => {
       </ModalCard>
       <ModalCard
         id={MODALS.SEND_ON_WALL}
-        onClose={() => setActiveModal(null)}
+        onClose={() => {
+          go(ROUTES.HOME);
+          setActiveModal(null)
+        }}
         icon={<Icon56CheckCircleOutline/>}
         header="Сообщение успешно отправлено"
         actions={[{
@@ -388,7 +391,10 @@ const App = () => {
       </ModalCard>
       <ModalCard
         id={MODALS.ERROR_ON_WALL}
-        onClose={() => setActiveModal(null)}
+        onClose={() => {
+          go(ROUTES.HOME);
+          setActiveModal(null)
+        }}
         icon={<Icon56DoNotDisturbOutline/>}
         header="Сообщение не доставлено"
         actions={[{
