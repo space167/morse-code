@@ -366,11 +366,6 @@ const App = () => {
         header={chars && chars.map((char, i) => (
           <span key={i} className={i === currentChar ? 'blue' : ''}>{char}</span>
         ))}
-        actions={[{
-          title: 'СТОП',
-          mode: activeModal ? 'primary' : 'secondary',
-          action: activeModal ? stopPlay : ''
-        }]}
       >
       </ModalCard>
       <ModalCard
