@@ -85,7 +85,7 @@ const Home = (
               type="text"
               value={textInput}
               maxLength={MAX_LENGTH_STR}
-              pattern="^[0-9А-Яа-яЁёËë \s]+$"
+              pattern="^[0-9А-Яа-яЁёËë\s]+$"
               placeholder="Введите сообщение"
               onChange={onHandleChangeInput}
             />

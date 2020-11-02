@@ -171,6 +171,7 @@ const App = () => {
     async function fetchData() {
       const user = await bridge.send('VKWebAppGetUserInfo');
       const sheetState = await bridge.send('VKWebAppStorageGet', {keys: [STORAGE_KEYS.STATUS, STORAGE_KEYS.SETTINGS]});
+      let checkSettingsDefault = true;
       if (Array.isArray(sheetState.keys)) {
         const data = {};
         sheetState.keys.forEach(({key, value}) => {
@@ -189,6 +190,7 @@ const App = () => {
                 break;
               case STORAGE_KEYS.SETTINGS:
                 setSettings(data[key]);
+                checkSettingsDefault = false;
                 break;
               default:
                 break;
@@ -208,7 +210,7 @@ const App = () => {
             setFetchedState({});
           }
         });
-        if (!settings) {
+        if (checkSettingsDefault) {
           setSettings({volume: true, flash: true})
         }
       } else {
@@ -345,13 +347,13 @@ const App = () => {
             <Cell before={<Icon24Flash/>}
                   asideContent={<Switch
                     onChange={() => setSettings({...settings, flash: !settings.flash})}
-                    checked={settings ? settings.flash : true}/>}>
+                    checked={settings && settings.flash}/>}>
               Свет
             </Cell>
             <Cell before={<Icon24Volume/>}
                   asideContent={<Switch
                     onChange={() => setSettings({...settings, volume: !settings.volume})}
-                    checked={settings ? settings.volume : true}/>}>
+                    checked={settings && settings.volume}/>}>
               Звук
             </Cell>
           </FormLayoutGroup>
@@ -366,8 +368,8 @@ const App = () => {
         ))}
         actions={[{
           title: 'СТОП',
-          mode: 'primary',
-          action: stopPlay
+          mode: activeModal ? 'primary' : 'secondary',
+          action: activeModal ? stopPlay : ''
         }]}
       >
       </ModalCard>
